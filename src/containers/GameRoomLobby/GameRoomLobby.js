@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './GameRoomLobby.css'
-import { Button } from 'react-bootstrap'
+import { Button, ButtonGroup } from 'react-bootstrap'
 import {
     leaveRoom,
+    startGame,
 } from '../../socket'
 
 class GameRoomLobby extends Component {
@@ -12,16 +13,25 @@ class GameRoomLobby extends Component {
         // TODO: set game room to be null
     }
 
+    onStartPress = () => {
+        startGame()
+    }
+
     render() {
         return <div className="body">
             <h1>Game Room {this.props.gameRoom.id}</h1>
-            <Button onClick={this.onBackPress}>
-                Back to main lobby
-            </Button>
+            <ButtonGroup>
+                <Button variant="outline-primary" onClick={this.onBackPress}>
+                    Back to main lobby
+                </Button>
+                <Button variant="outline-primary" onClick={this.onStartPress}>
+                    Start Game
+                </Button>
+            </ButtonGroup>
             {this.props.gameRoom && <div>
                 {this.props.gameRoom.clients.map((client, index) => {
                     return <div key={index}>
-                        {client}
+                        {client}{this.props.gameRoom.host === client && ' - HOST'}
                     </div>
                 })}
             </div>}

@@ -29,4 +29,6 @@ export const joinRoom = room_id => socket.emit('JOIN_ROOM', room_id)
 
 export const leaveRoom = () => socket.emit('LEAVE_ROOM')
 
+export const startGame = () => socket.emit('START_GAME')
+
 export default configureSocket;

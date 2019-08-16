@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'
+import { Button, ButtonGroup } from 'react-bootstrap'
 import './MainLobby.css'
 import {
     createGameRoom,
@@ -17,8 +17,10 @@ class MainLobby extends Component {
     render() {
         return <div className="body">
             <h1>Lobby</h1>
-            <Button variant="outline-primary" onClick={createGameRoom}>Create room</Button>
-            <Button variant="outline-primary" onClick={refreshRooms}>Refresh rooms</Button>
+            <ButtonGroup>
+                <Button variant="outline-primary" onClick={createGameRoom}>Create room</Button>
+                <Button variant="outline-primary" onClick={refreshRooms}>Refresh rooms</Button>
+            </ButtonGroup>
             <div className="listing">
                 {this.props.gameRooms.map((room, index) => {
                     return <Button key={index} onClick={() => joinRoom(room.id)}>
