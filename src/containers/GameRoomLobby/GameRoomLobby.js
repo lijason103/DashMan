@@ -8,6 +8,11 @@ import {
 } from '../../socket'
 
 class GameRoomLobby extends Component {
+    constructor(props) {
+        super(props)
+        console.log('Game Room Lobby')
+    }
+
     onBackPress = () => {
         leaveRoom()
         // TODO: set game room to be null
