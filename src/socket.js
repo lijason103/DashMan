@@ -1,6 +1,6 @@
-import io from 'socket.io-client';
+import io from 'socket.io-client'
 
-const socket = io('http://localhost:8000');
+const socket = io('http://localhost:8000')
 
 // Socket listeners
 const configureSocket = dispatch => {
@@ -13,6 +13,11 @@ const configureSocket = dispatch => {
 	socket.on('GAME_ROOMS', gameRooms => {
 		dispatch({ type: 'GAME_ROOMS', gameRooms })
 	})
+
+	socket.on('GAME_ROOM', gameRoom => {
+		dispatch({ type: 'GAME_ROOM', gameRoom })
+	})
+
 	return socket;
 };
 
@@ -21,5 +26,7 @@ export const createGameRoom = () => socket.emit('CREATE_ROOM')
 export const refreshRooms = () => socket.emit('GET_ROOMS')
 
 export const joinRoom = room_id => socket.emit('JOIN_ROOM', room_id)
+
+export const leaveRoom = () => socket.emit('LEAVE_ROOM')
 
 export default configureSocket;
