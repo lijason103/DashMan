@@ -1,21 +1,38 @@
 {
-  "name": "project",
-  "version": "1.0.0",
-  "main": "server.js",
+  "name": "dashman",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
+    "concurrently": "^4.1.1",
     "express": "^4.17.1",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-redux": "^7.1.0",
+    "react-scripts": "3.1.1",
+    "redux": "^4.0.4",
     "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.1"
+    "socket.io-client": "^2.2.0",
+    "uuid": "^3.3.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "concurrently \"react-scripts start\" \"node server.js\"",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

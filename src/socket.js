@@ -1,0 +1,25 @@
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:8000');
+
+// Socket listeners
+const configureSocket = dispatch => {
+	// make sure our socket is connected to the port
+	socket.on('connect', () => {
+		console.log('connected');
+	});
+
+	// A list of game rooms
+	socket.on('GAME_ROOMS', gameRooms => {
+		dispatch({ type: 'GAME_ROOMS', gameRooms })
+	})
+	return socket;
+};
+
+export const createGameRoom = () => socket.emit('CREATE_ROOM')
+
+export const refreshRooms = () => socket.emit('GET_ROOMS')
+
+export const joinRoom = room_id => socket.emit('JOIN_ROOM', room_id)
+
+export default configureSocket;
