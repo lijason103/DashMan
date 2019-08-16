@@ -6,6 +6,7 @@ import configureSocket from './socket';
 import { createStore } from 'redux';
 import reducer from './reducer';
 import { Provider } from 'react-redux';
+import 'bootstrap/dist/css/bootstrap.css';
 const store = createStore(reducer);
 
 
