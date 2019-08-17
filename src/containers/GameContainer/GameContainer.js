@@ -12,11 +12,12 @@ class GameContainer extends Component {
         console.log('In-Game')
         super(props)
         this.game = new Game()
+        this.game.Initialize()
         this.gameCanvas = null
     }
 
     componentWillUnmount() {
-        this.game.getApp().stop()
+        this.game.removeAllListeners()
     }
 
     onBackPress = () => {
