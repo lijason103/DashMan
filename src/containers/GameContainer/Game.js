@@ -42,16 +42,19 @@ export default class Game {
         let mPlayer = this.players[socket.id]
 
         // Render players
-        for (let id in this.players) {
-            if (this.players.hasOwnProperty(id)) {
-                let player = this.players[id]
-                player.render()
+        if (this.map) {
+            let blockWidth = this.map.getBlockWidth()
+            let blockHeight = this.map.getBlockHeight()
+            for (let id in this.players) {
+                if (this.players.hasOwnProperty(id)) {
+                    let player = this.players[id]
+                    player.render(blockWidth, blockHeight)
+                }
             }
-        }
-
-        // Arrow
-        if (mPlayer) {
-            this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY())
+            // Arrow
+            if (mPlayer) {
+                this.arrowIndicator.render((mPlayer.getX() * blockWidth)/2, (mPlayer.getY() * blockHeight)/2)
+            }
         }
     }
 
