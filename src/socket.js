@@ -18,6 +18,10 @@ const configureSocket = dispatch => {
 		dispatch({ type: 'GAME_ROOM', gameRoom })
 	})
 
+	socket.on('IN_GAME_STATE', gameState => {
+		dispatch({ type: 'GAME_STATE', gameState })
+	})
+
 	return socket;
 };
 

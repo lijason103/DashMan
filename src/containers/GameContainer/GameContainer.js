@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './GameContainer.css'
-import { Button, ButtonGroup } from 'react-bootstrap'
+import { Button, ButtonGroup, ProgressBar } from 'react-bootstrap'
 import Game from './Game'
+import { socket } from '../../index'
 import {
     leaveRoom,
 } from '../../socket'
+
+const gameWidth = 1125
+const gameHeight = 750
 
 class GameContainer extends Component {
     constructor(props) {
         console.log('In-Game')
         super(props)
-        this.game = new Game()
+        this.game = new Game(gameWidth, gameHeight)
         this.game.Initialize()
         this.gameCanvas = null
     }
@@ -33,14 +37,26 @@ class GameContainer extends Component {
     }
 
     render() {
+        let mPlayer = null
+        if (this.props.gameState && this.props.gameState.players) {
+            mPlayer = this.props.gameState.players[socket.id]
+            console.log(mPlayer)
+        }
         return <div className="body">
             <h1>Game {this.props.gameRoom.id}</h1>
-            <div>
-                <ButtonGroup style={{position: 'absolute'}}>
-                    <Button variant="outline-primary" onClick={this.onBackPress}>
-                        Quit
-                    </Button>
-                </ButtonGroup>
+            <div id="game-wrapper" style={{width: gameWidth, height: gameHeight}}>
+                {mPlayer && 
+                <div id="ui" style={{'display': 'flex', 'flex-direction': 'row'}}>
+                    <ButtonGroup>
+                        <Button variant="outline-primary" onClick={this.onBackPress}>
+                            Quit
+                        </Button>
+                    </ButtonGroup>
+                    <ProgressBar style={{flex: 1}} striped animated
+                        now={mPlayer.energy/mPlayer.max_energy * 100}
+                        label={`${mPlayer.energy}/${mPlayer.max_energy}`}
+                    />
+                </div>}
                 <div ref={this.updateGameCanvas}/>
             </div>
         </div>
@@ -48,7 +64,8 @@ class GameContainer extends Component {
 }
 
 const mapStateToProps = state => ({
-    gameRoom: state.gameRoom
+    gameRoom: state.gameRoom,
+    gameState: state.gameState,
 });
 
 export default connect(mapStateToProps)(GameContainer);
