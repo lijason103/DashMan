@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { socket } from '../../index'
 import { connect } from 'react-redux'
 import './GameRoomLobby.css'
 import { Button, ButtonGroup } from 'react-bootstrap'
@@ -23,15 +24,16 @@ class GameRoomLobby extends Component {
     }
 
     render() {
+        console.log(this.props.gameRoom)
         return <div className="body">
             <h1>Game Room {this.props.gameRoom.id}</h1>
             <ButtonGroup>
                 <Button variant="outline-primary" onClick={this.onBackPress}>
                     Back to main lobby
                 </Button>
-                <Button variant="outline-primary" onClick={this.onStartPress}>
+                {this.props.gameRoom.host === socket.id && <Button variant="outline-primary" onClick={this.onStartPress}>
                     Start Game
-                </Button>
+                </Button>}
             </ButtonGroup>
             {this.props.gameRoom && <div>
                 {this.props.gameRoom.clients.map((client, index) => {
