@@ -1,11 +1,12 @@
 import * as Pixi from 'pixi.js';
 
 export default class Player {
-    constructor(stage, id, x, y, hp) {
+    constructor(stage, id, x, y, hp, chargeRate) {
         this.x = x
         this.y = y
         this.id = id
         this.hp = hp
+        this.chargeRate = chargeRate
 
         this.graphics = new Pixi.Graphics()
         stage.addChild(this.graphics)
@@ -41,5 +42,9 @@ export default class Player {
 
     getId() {
         return this.id
+    }
+
+    getChargeRate() {
+        return this.chargeRate
     }
 }

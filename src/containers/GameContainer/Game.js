@@ -1,4 +1,5 @@
 import * as Pixi from 'pixi.js';
+
 import { socket } from '../../index'
 import Player from './libs/Player'
 import Keyboard from './libs/Keyboard'
@@ -42,33 +43,47 @@ export default class Game {
         let mPlayer = this.players[socket.id]
 
         // Render players
-        if (this.map) {
-            let blockWidth = this.map.getBlockWidth()
-            let blockHeight = this.map.getBlockHeight()
-            for (let id in this.players) {
-                if (this.players.hasOwnProperty(id)) {
-                    let player = this.players[id]
-                    player.render(blockWidth, blockHeight)
-                }
+        let blockWidth = this.map.getBlockWidth()
+        let blockHeight = this.map.getBlockHeight()
+        for (let id in this.players) {
+            if (this.players.hasOwnProperty(id)) {
+                let player = this.players[id]
+                player.render(blockWidth, blockHeight)
             }
-            // Arrow
-            if (mPlayer) {
-                this.arrowIndicator.render((mPlayer.getX() * blockWidth)/2, (mPlayer.getY() * blockHeight)/2)
-            }
+        }
+        // Arrow
+        if (mPlayer) {
+            this.arrowIndicator.render(mPlayer.getX() * blockWidth - blockWidth/2, mPlayer.getY() * blockHeight - blockHeight/2)
         }
     }
 
-    gameLoop(delta) {
+    gameLoop(deltaMS) {
+        let elapsedMS = this.app.ticker.elapsedMS
+        if (!this.map) return
         this.render()
+        let mPlayer = this.players[socket.id]
+        let blockWidth = this.map.getBlockWidth()
+        let blockHeight = this.map.getBlockHeight()
+
+        // Update arrow indicator
         if (this.upKey.isDown) {
-            this.arrowIndicator.update('up', 2)
+            this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight)
         } else if (this.downKey.isDown) {
-            this.arrowIndicator.update('down', 2)
+            this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight)
         } else if (this.rightKey.isDown) {
-            this.arrowIndicator.update('right', 2)
+            this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth)
         } else if (this.leftKey.isDown) {
-            this.arrowIndicator.update('left', 2)
+            this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth)
         } else {
+            // Send move request to server
+            let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
+            if (numOfBlocks > 0) {
+                console.log(numOfBlocks)
+                socket.emit('MOVE_CHAR', {
+                    direction: this.arrowIndicator.direction,
+                    steps: numOfBlocks
+                })
+            }
             this.arrowIndicator.reset()
         }
     }
@@ -81,11 +96,20 @@ export default class Game {
         socket.on('IN_GAME_STATE', state => {
             // Create map if it hasn't been created yet
             if (!this.map) this.map = new Map(this.app.stage, state.map.width, state.map.height, this.app.screen.width, this.app.screen.height)
-
             for (let sPlayer of state.players) {
                 if (!this.players.hasOwnProperty(sPlayer.id)) {
-                    this.players[sPlayer.id] = (new Player(this.app.stage, sPlayer.x, sPlayer.y, sPlayer.hp))
+                    // New player
+                    this.players[sPlayer.id] = (
+                        new Player(
+                            this.app.stage,
+                            sPlayer.id,
+                            sPlayer.x, 
+                            sPlayer.y, 
+                            sPlayer.hp, 
+                            sPlayer.chargeRate
+                        ))
                 } else {
+                    // Update player
                     this.players[sPlayer.id].update(sPlayer.x, sPlayer.y, sPlayer.hp)
                 } 
             }

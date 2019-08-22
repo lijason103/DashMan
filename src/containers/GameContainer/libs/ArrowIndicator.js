@@ -5,6 +5,7 @@ export default class ArrowIndicator {
         this.length = 0
         this.direction = null
         this.line = new Pixi.Graphics()
+        this.numOfBlock = 0 // the number of blocks that the line has reached
         stage.addChild(this.line)
     }
 
@@ -25,18 +26,29 @@ export default class ArrowIndicator {
         }
     }
 
-    update(direction, deltaLength) {
+    update(elapsedMS, direction, chargeRate, blockSize) {
+        let addLength = elapsedMS * chargeRate * (blockSize/1000)
         if (direction !== this.direction) {
-            this.length = deltaLength
+            this.length = addLength
             this.direction = direction
         } else {
-            this.length += deltaLength
+            this.length += addLength
+            this.numOfBlock = this.length / blockSize
         }
     }
 
     reset() {
         this.length = 0
         this.direction = null
+        this.numOfBlock = 0
     }
 
+    // Get the number of blocks that the indicator has reached
+    getNumOfBlock() {
+        return this.numOfBlock
+    }
+
+    getDirection() {
+        return this.direction
+    }
 }
