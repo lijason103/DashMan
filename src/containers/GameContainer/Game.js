@@ -53,7 +53,7 @@ export default class Game {
         }
         // Arrow
         if (mPlayer) {
-            this.arrowIndicator.render(mPlayer.getX() * blockWidth - blockWidth/2, mPlayer.getY() * blockHeight - blockHeight/2)
+            this.arrowIndicator.render(mPlayer.getX() * blockWidth + blockWidth/2, mPlayer.getY() * blockHeight + blockHeight/2)
         }
     }
 

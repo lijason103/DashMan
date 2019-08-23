@@ -24,7 +24,7 @@ export default class Player {
         this.graphics.clear()
         this.graphics.lineStyle(0)
         this.graphics.beginFill(0xDE3249, 1)
-        this.graphics.drawCircle(this.x * blockWidth - blockWidth/2, this.y * blockHeight - blockHeight/2, diameter/2)
+        this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter/2)
         this.graphics.endFill()
     }
 
