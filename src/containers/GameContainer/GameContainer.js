@@ -45,7 +45,7 @@ class GameContainer extends Component {
             <h1>Game {this.props.gameRoom.id}</h1>
             <div id="game-wrapper" style={{width: gameWidth, height: gameHeight}}>
                 {mPlayer && 
-                <div id="ui" style={{'display': 'flex', 'flex-direction': 'row'}}>
+                <div id="ui" style={{display: 'flex', flexDirection: 'row'}}>
                     <ButtonGroup>
                         <Button variant="outline-primary" onClick={this.onBackPress}>
                             Quit

@@ -37,7 +37,9 @@ class MainLobby extends Component {
                             <td>{room.clients.length}/{room.max_clients}</td>
                             <td>{room.status}</td>
                             <td>
-                                <Button onClick={() => joinRoom(room.id)}>JOIN</Button>
+                                {room.clients.length < room.max_clients && room.status !== 'IN-GAME' &&
+                                    <Button onClick={() => joinRoom(room.id)}>JOIN</Button>
+                                }
                             </td>
                         </tr>
                     })}

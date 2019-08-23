@@ -20,8 +20,9 @@ export default class Player {
     }
 
     render(blockWidth, blockHeight) {
-        let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
         this.graphics.clear()
+        if (this.hp <= 0) return
+        let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
         this.graphics.lineStyle(0)
         this.graphics.beginFill(0xDE3249, 1)
         this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter/2)
