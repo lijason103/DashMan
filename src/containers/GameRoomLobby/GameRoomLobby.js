@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { socket } from '../../index'
 import { connect } from 'react-redux'
 import './GameRoomLobby.css'
-import { Button, ButtonGroup } from 'react-bootstrap'
+import { Button, ButtonGroup, Table } from 'react-bootstrap'
 import {
     leaveRoom,
     startGame,
@@ -24,9 +24,8 @@ class GameRoomLobby extends Component {
     }
 
     render() {
-        console.log(this.props.gameRoom)
         return <div className="body">
-            <h1>Game Room {this.props.gameRoom.id}</h1>
+            <h1>Game Room {this.props.gameRoom.id.slice(-5)}</h1>
             <ButtonGroup>
                 <Button variant="outline-primary" onClick={this.onBackPress}>
                     Back to main lobby
@@ -35,13 +34,23 @@ class GameRoomLobby extends Component {
                     Start Game
                 </Button>}
             </ButtonGroup>
-            {this.props.gameRoom && <div>
-                {this.props.gameRoom.clients.map((client, index) => {
-                    return <div key={index}>
-                        {client}{this.props.gameRoom.host === client && ' - HOST'}
-                    </div>
-                })}
-            </div>}
+
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Host</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.props.gameRoom && this.props.gameRoom.clients.map((client, index) => {
+                        return <tr key={index}>
+                            <td>{client}</td>
+                            <td>{this.props.gameRoom.host === client ? 'HOST' : ''}</td>
+                        </tr>
+                    })}
+                </tbody>
+            </Table>
         </div>
     }
 }

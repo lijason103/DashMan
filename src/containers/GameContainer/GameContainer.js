@@ -40,7 +40,6 @@ class GameContainer extends Component {
         let mPlayer = null
         if (this.props.gameState && this.props.gameState.players) {
             mPlayer = this.props.gameState.players[socket.id]
-            console.log(mPlayer)
         }
         return <div className="body">
             <h1>Game {this.props.gameRoom.id}</h1>
