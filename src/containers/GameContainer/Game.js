@@ -66,25 +66,27 @@ export default class Game {
         let blockHeight = this.map.getBlockHeight()
 
         // Update arrow indicator
-        if (this.upKey.isDown) {
-            this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight)
-        } else if (this.downKey.isDown) {
-            this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight)
-        } else if (this.rightKey.isDown) {
-            this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth)
-        } else if (this.leftKey.isDown) {
-            this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth)
-        } else {
-            // Send move request to server
-            let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
-            if (numOfBlocks > 0) {
-                console.log(numOfBlocks)
-                socket.emit('MOVE_CHAR', {
-                    direction: this.arrowIndicator.direction,
-                    steps: numOfBlocks
-                })
+        if (mPlayer.hp > 0) {
+            if (this.upKey.isDown) {
+                this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight)
+            } else if (this.downKey.isDown) {
+                this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight)
+            } else if (this.rightKey.isDown) {
+                this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth)
+            } else if (this.leftKey.isDown) {
+                this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth)
+            } else {
+                // Send move request to server
+                let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
+                if (numOfBlocks > 0) {
+                    console.log(numOfBlocks)
+                    socket.emit('MOVE_CHAR', {
+                        direction: this.arrowIndicator.direction,
+                        steps: numOfBlocks
+                    })
+                }
+                this.arrowIndicator.reset()
             }
-            this.arrowIndicator.reset()
         }
     }
 
