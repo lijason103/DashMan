@@ -4,7 +4,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import configureSocket from './socket';
 import { createStore } from 'redux';
-import reducer from './reducer';
+import reducer from './redux/reducer';
 import { Provider } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.css';
 const store = createStore(reducer);

@@ -2,11 +2,15 @@ import React, { Component } from 'react';
 import { socket } from '../../index'
 import { connect } from 'react-redux'
 import './GameRoomLobby.css'
+import GameContainer from '../GameContainer/GameContainer'
 import { Button, ButtonGroup, Table } from 'react-bootstrap'
 import {
     leaveRoom,
     startGame,
 } from '../../socket'
+import {
+    SET_GAME_ROOM,
+} from '../../redux/actions'
 
 class GameRoomLobby extends Component {
     constructor(props) {
@@ -16,14 +20,14 @@ class GameRoomLobby extends Component {
 
     onBackPress = () => {
         leaveRoom()
-        // TODO: set game room to be null
+        this.props.dispatch({ type:SET_GAME_ROOM, gameRoom: null })
     }
 
     onStartPress = () => {
         startGame()
     }
 
-    render() {
+    renderGameRoom() {
         return <div className="body">
             <h1>Game Room {this.props.gameRoom.id.slice(-5)}</h1>
             <ButtonGroup>
@@ -53,10 +57,19 @@ class GameRoomLobby extends Component {
             </Table>
         </div>
     }
+
+    render() {
+        if (this.props.gameOverState || this.props.gameState) {
+            return <GameContainer />
+        }
+        return this.renderGameRoom()
+    }
 }
 
 const mapStateToProps = state => ({
-    gameRoom: state.gameRoom
+    gameRoom: state.gameRoom,
+    gameOverState: state.gameOverState,
+    gameState: state.gameState,
 });
 
 export default connect(mapStateToProps)(GameRoomLobby);

@@ -119,6 +119,12 @@ export default class Game {
         })
     }
 
+    handle_game_over() {
+        socket.on('GAME_OVER_STATE', state => {
+            
+        })
+    }
+
     // ***** Getters *****
     getApp() {
         return this.app

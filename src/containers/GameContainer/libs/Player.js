@@ -21,7 +21,6 @@ export default class Player {
 
     render(blockWidth, blockHeight) {
         this.graphics.clear()
-        console.log(this.hp)
         if (this.hp <= 0) return
         let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
         this.graphics.lineStyle(0)

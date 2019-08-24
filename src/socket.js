@@ -1,4 +1,10 @@
 import io from 'socket.io-client'
+import {
+	SET_GAME_ROOMS,
+	SET_GAME_ROOM,
+	SET_GAME_STATE,
+	SET_GAME_OVER_STATE,
+} from './redux/actions'
 
 const socket = io('http://localhost:8000')
 
@@ -11,15 +17,19 @@ const configureSocket = dispatch => {
 
 	// A list of game rooms
 	socket.on('GAME_ROOMS', gameRooms => {
-		dispatch({ type: 'GAME_ROOMS', gameRooms })
+		dispatch({ type: SET_GAME_ROOMS, gameRooms })
 	})
 
 	socket.on('GAME_ROOM', gameRoom => {
-		dispatch({ type: 'GAME_ROOM', gameRoom })
+		dispatch({ type: SET_GAME_ROOM, gameRoom })
 	})
 
 	socket.on('IN_GAME_STATE', gameState => {
-		dispatch({ type: 'GAME_STATE', gameState })
+		dispatch({ type: SET_GAME_STATE, gameState })
+	})
+
+	socket.on('GAME_OVER_STATE', gameOverState => {
+		dispatch({ type: SET_GAME_OVER_STATE, gameOverState })
 	})
 
 	return socket;
