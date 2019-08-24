@@ -1,9 +1,11 @@
 const app = require('express')();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+require('dotenv').config()
 const GameRoomController = require('./lib/GameRoomController')
 
-server.listen(8000, () => console.log('connected to port 8000!'));
+const PORT = process.env.REACT_APP_SOCKET_PORT || 8000
+server.listen(PORT, () => console.log(`connected to port ${PORT}!`));
 
 io.on('connection', socket => {
     console.log('User connected.')

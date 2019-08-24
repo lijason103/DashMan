@@ -7,6 +7,7 @@ import { createStore } from 'redux';
 import reducer from './redux/reducer';
 import { Provider } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.css';
+require('dotenv').config()
 const store = createStore(reducer);
 
 
