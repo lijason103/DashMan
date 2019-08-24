@@ -112,6 +112,7 @@ export default class Game {
                             sPlayer.y, 
                             sPlayer.hp, 
                             sPlayer.chargeRate,
+                            sPlayer.max_hp
                         ))
                     player_num++
                 } else {
