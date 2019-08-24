@@ -1,11 +1,10 @@
 import * as Pixi from 'pixi.js';
 
 export default class Map {
-    constructor(stage, width, height, winWidth, winHeight) {
-        this.width = width // Number of block horizontally
-        this.height = height // Number of block vertically
-        this.winWidth = winWidth
-        this.winHeight = winHeight
+    constructor(stage, structures, winWidth, winHeight) {
+        this.structures = structures
+        this.winWidth = winWidth // Device window width
+        this.winHeight = winHeight // Device window height
 
         this.renderBackground(stage)
     }
@@ -13,26 +12,44 @@ export default class Map {
     renderBackground(stage) {
         this.horizontalLines = []
         this.verticalLines = []
+        let width = this.structures[0].length
+        let height = this.structures.length
+        let blockHeight = this.getBlockHeight()
+        let blockWidth = this.getBlockWidth()
         
         // Horizontal lines
-        for (let i = 0; i < this.height; ++i) {
+        for (let i = 0; i < height; ++i) {
             let line = new Pixi.Graphics()
-            let block_size = this.getBlockHeight()
             line.lineStyle(1, 0xc1c8cc, 1)
-            line.moveTo(0, i * block_size)
-            line.lineTo(this.winWidth, i * block_size)
+            line.moveTo(0, i * blockHeight)
+            line.lineTo(this.winWidth, i * blockHeight)
             this.horizontalLines.push(line)
             stage.addChild(line)
         }
         // Vertical lines
-        for (let i = 0; i < this.width; ++i) {
+        for (let i = 0; i < width; ++i) {
             let line = new Pixi.Graphics()
-            let block_size = this.getBlockWidth()
             line.lineStyle(1, 0xc1c8cc, 1)
-            line.moveTo(i * block_size, 0)
-            line.lineTo(i * block_size, this.winHeight)
+            line.moveTo(i * blockWidth, 0)
+            line.lineTo(i * blockWidth, this.winHeight)
             this.verticalLines.push(line)
             stage.addChild(line)
+        }
+
+        // Walls
+        let wall_blockWidth = blockWidth * 0.8
+        let wall_gap_width = blockWidth - wall_blockWidth
+        let wall_blockHeight = blockHeight * 0.8
+        let wall_gap_height = blockHeight - wall_blockHeight
+        for (let i = 0; i < height; ++i) {
+            for (let j = 0; j < width; ++j) {
+                if (this.structures[i][j] !== 'W') continue
+                let rectangle = new Pixi.Graphics()
+                rectangle.beginFill(0x9e9e9e)
+                rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 20)
+                rectangle.endFill()
+                stage.addChild(rectangle)
+            }
         }
     }
 
@@ -40,10 +57,10 @@ export default class Map {
     }
 
     getBlockWidth() {
-        return this.winWidth/this.width
+        return this.winWidth/this.structures[0].length
     }
 
     getBlockHeight() {
-        return this.winHeight/this.height
+        return this.winHeight/this.structures.length
     }
 }

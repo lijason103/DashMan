@@ -97,7 +97,7 @@ export default class Game {
     handle_game_state() {
         socket.on('IN_GAME_STATE', state => {
             // Create map if it hasn't been created yet
-            if (!this.map) this.map = new Map(this.app.stage, state.map.width, state.map.height, this.app.screen.width, this.app.screen.height)
+            if (!this.map) this.map = new Map(this.app.stage, state.map.structures, this.app.screen.width, this.app.screen.height)
             for (let property in state.players) {
                 let sPlayer = state.players[property]
                 if (!this.players.hasOwnProperty(sPlayer.id)) {

@@ -59,7 +59,7 @@ class GameRoomLobby extends Component {
     }
 
     render() {
-        if (this.props.gameOverState || this.props.gameState) {
+        if (this.props.gameOverState || (this.props.gameState && this.props.gameRoom.status === 'IN-GAME')) {
             return <GameContainer />
         }
         return this.renderGameRoom()
