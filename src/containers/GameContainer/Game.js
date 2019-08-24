@@ -98,6 +98,7 @@ export default class Game {
         socket.on('IN_GAME_STATE', state => {
             // Create map if it hasn't been created yet
             if (!this.map) this.map = new Map(this.app.stage, state.map.structures, this.app.screen.width, this.app.screen.height)
+            let player_num = 0
             for (let property in state.players) {
                 let sPlayer = state.players[property]
                 if (!this.players.hasOwnProperty(sPlayer.id)) {
@@ -105,12 +106,14 @@ export default class Game {
                     this.players[sPlayer.id] = (
                         new Player(
                             this.app.stage,
+                            player_num,
                             sPlayer.id,
                             sPlayer.x, 
                             sPlayer.y, 
                             sPlayer.hp, 
-                            sPlayer.chargeRate
+                            sPlayer.chargeRate,
                         ))
+                    player_num++
                 } else {
                     // Update player
                     this.players[sPlayer.id].update(sPlayer.x, sPlayer.y, sPlayer.hp)

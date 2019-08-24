@@ -1,7 +1,11 @@
 import * as Pixi from 'pixi.js';
 
+// blue, red, green, orange, purple, black
+const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x000000]
+
 export default class Player {
-    constructor(stage, id, x, y, hp, chargeRate) {
+    constructor(stage, num, id, x, y, hp, chargeRate) {
+        this.num = num
         this.x = x
         this.y = y
         this.id = id
@@ -24,7 +28,7 @@ export default class Player {
         if (this.hp <= 0) return
         let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
         this.graphics.lineStyle(0)
-        this.graphics.beginFill(0xDE3249, 1)
+        this.graphics.beginFill(colors[this.num], 1)
         this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter/2)
         this.graphics.endFill()
     }
