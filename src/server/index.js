@@ -4,7 +4,7 @@ const app = express()
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 require('dotenv').config()
-const GameRoomController = require('../../lib/GameRoomController')
+const GameRoomController = require('./lib/GameRoomController')
 
 const PORT = process.env.PORT || 8000
 app.use(express.static(path.join(__dirname, '../../build')))
