@@ -1,11 +1,17 @@
-const app = require('express')();
+const path = require('path')
+const express = require('express')
+const app = express()
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 require('dotenv').config()
-const GameRoomController = require('./lib/GameRoomController')
+const GameRoomController = require('../../lib/GameRoomController')
 
-const PORT = process.env.REACT_APP_SOCKET_PORT || 8000
-server.listen(PORT, () => console.log(`connected to port ${PORT}!`));
+const PORT = process.env.PORT || 8000
+app.use(express.static(path.join(__dirname, '../../build')))
+
+app.get('/', (req, res, next) => {
+    res.sendFile(__dirname + './index.html')
+})
 
 io.on('connection', socket => {
     console.log('User connected.')
@@ -27,3 +33,5 @@ io.on('connection', socket => {
 
 
 })
+
+server.listen(PORT, () => console.log(`connected to port ${PORT}!`));

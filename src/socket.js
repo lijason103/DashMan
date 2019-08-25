@@ -8,7 +8,8 @@ import {
 
 const socketIP = process.env.REACT_APP_SOCKET_IP || 'http://localhost'
 const socketPort = process.env.REACT_APP_SOCKET_PORT || '8000'
-const socket = io(`${socketIP}:${socketPort}`)
+// const socket = io(`${socketIP}:${socketPort}`)
+const socket = io()
 
 // Socket listeners
 const configureSocket = dispatch => {
