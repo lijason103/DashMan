@@ -18,6 +18,10 @@ class GameRoomLobby extends Component {
         console.log('Game Room Lobby')
     }
 
+    onFullScreenPress = () => {
+        document.documentElement.requestFullscreen()
+    }
+
     onBackPress = () => {
         leaveRoom()
         this.props.dispatch({ type:SET_GAME_ROOM, gameRoom: null })
@@ -33,6 +37,9 @@ class GameRoomLobby extends Component {
             <ButtonGroup>
                 <Button variant="outline-primary" onClick={this.onBackPress}>
                     Back to main lobby
+                </Button>
+                <Button variant="outline-primary" onClick={this.onFullScreenPress}>
+                    Full Screen
                 </Button>
                 {this.props.gameRoom.host === socket.id && <Button variant="outline-primary" onClick={this.onStartPress}>
                     Start Game

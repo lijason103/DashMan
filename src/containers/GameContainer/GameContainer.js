@@ -74,7 +74,7 @@ class GameContainer extends Component {
                             Quit
                         </Button>
                     </ButtonGroup>
-                    {mPlayer && <ProgressBar style={{flex: 1, height: '100%'}} striped animated
+                    {mPlayer && <ProgressBar style={{flex: 1, height: '100%'}}
                         striped={mPlayer.hp > 0}
                         animated={mPlayer.hp > 0}
                         variant={mPlayer.hp > 0 ? 'info' : 'danger'}
