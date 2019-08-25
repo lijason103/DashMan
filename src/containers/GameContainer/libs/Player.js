@@ -38,7 +38,6 @@ export default class Player {
         this.graphics.beginFill(0xDCEDC8)
         this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width, hp_height)
         this.graphics.endFill()
-        console.log(this.max_hp)
         this.graphics.beginFill(0x4CAF50)
         this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width*(this.hp/this.max_hp), hp_height)
         this.graphics.endFill()

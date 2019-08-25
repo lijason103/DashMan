@@ -43,6 +43,7 @@ class GameContainer extends Component {
         this.gameCanvas = element
         if(this.gameCanvas && this.gameCanvas.children.length<=0) {
             this.gameCanvas.appendChild(this.game.getApp().view)
+            this.game.InitalizeControlManager('gameCanvas')
         }
     }
 
@@ -52,7 +53,7 @@ class GameContainer extends Component {
             mPlayer = this.props.gameState.players[socket.id]
         }
         return <div className="body">
-            <h1>Game {this.props.gameRoom.id}</h1>
+            <h1>Game {this.props.gameRoom.id.slice(-5)}</h1>
             <div id="game-wrapper" style={{width: gameWidth, height: gameHeight}}>
                 
                 <div id="ui" style={{display: 'flex', flexDirection: 'row'}}>
@@ -66,7 +67,7 @@ class GameContainer extends Component {
                         label={`${mPlayer.energy}/${mPlayer.max_energy}`}
                     />}
                 </div>
-                <div ref={this.updateGameCanvas}/>
+                <div id='gameCanvas' ref={this.updateGameCanvas} style={{position: 'relative'}}/>
             </div>
             <Modal show={this.props.gameOverState ? true:false} onHide={this.onQuitGame}>
                 <Modal.Header closeButton>

@@ -1,8 +1,8 @@
 import * as Pixi from 'pixi.js';
-
 import { socket } from '../../index'
+
+import ControlManager from './libs/ControlManager'
 import Player from './libs/Player'
-import Keyboard from './libs/Keyboard'
 import ArrowIndicator from './libs/ArrowIndicator'
 import Map from './libs/Map'
 
@@ -18,13 +18,6 @@ export default class Game {
         // Map
         this.map = null
 
-        // Keyboard inputs
-        // TODO: setup a KeyboardManager
-        this.upKey = Keyboard('ArrowUp')
-        this.downKey = Keyboard('ArrowDown')
-        this.rightKey = Keyboard('ArrowRight')
-        this.leftKey = Keyboard('ArrowLeft')
-
         // Arrow Indicator
         this.arrowIndicator = new ArrowIndicator(this.app.stage)
 
@@ -35,6 +28,11 @@ export default class Game {
     // This needs to be called after the Game object is created (including all of the functions)
     Initialize() {
         this.app.ticker.add(this.gameLoop.bind(this))
+    }
+
+    // This should be called after the canvas is loaded 
+    InitalizeControlManager(id) {
+        this.controlManager = new ControlManager(id)
     }
 
     // ***** Render game *****
@@ -67,13 +65,13 @@ export default class Game {
 
         // Update arrow indicator
         if (mPlayer.hp > 0) {
-            if (this.upKey.isDown) {
+            if (this.controlManager.getIsUp()) {
                 this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight)
-            } else if (this.downKey.isDown) {
+            } else if (this.controlManager.getIsDown()) {
                 this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight)
-            } else if (this.rightKey.isDown) {
+            } else if (this.controlManager.getIsRight()) {
                 this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth)
-            } else if (this.leftKey.isDown) {
+            } else if (this.controlManager.getIsLeft()) {
                 this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth)
             } else {
                 // Send move request to server
@@ -123,12 +121,6 @@ export default class Game {
         })
     }
 
-    handle_game_over() {
-        socket.on('GAME_OVER_STATE', state => {
-            
-        })
-    }
-
     // ***** Getters *****
     getApp() {
         return this.app
@@ -138,9 +130,6 @@ export default class Game {
     removeAllListeners() {
         this.app.stop()
         this.app.ticker.stop()
-        this.upKey.unsubscribe()
-        this.downKey.unsubscribe()
-        this.rightKey.unsubscribe()
-        this.leftKey.unsubscribe()
+        this.controlManager.destroy()
     }
 }
