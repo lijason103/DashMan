@@ -49,7 +49,7 @@ class GameRoomLobby extends Component {
                 <tbody>
                     {this.props.gameRoom && this.props.gameRoom.clients.map((client, index) => {
                         return <tr key={index}>
-                            <td>{client}</td>
+                            <td>{socket.id === client ? <b>{client}</b> : client}</td>
                             <td>{this.props.gameRoom.host === client ? 'HOST' : ''}</td>
                         </tr>
                     })}
