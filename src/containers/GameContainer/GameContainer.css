@@ -1,0 +1,13 @@
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+}
+
+canvas {
+    border-left: 1px solid #c1c8cc;
+    border-right: 1px solid #c1c8cc;
+}

@@ -46,7 +46,7 @@ export default class Map {
                 if (this.structures[i][j] !== 'W') continue
                 let rectangle = new Pixi.Graphics()
                 rectangle.beginFill(0x9e9e9e)
-                rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 20)
+                rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 10)
                 rectangle.endFill()
                 stage.addChild(rectangle)
             }

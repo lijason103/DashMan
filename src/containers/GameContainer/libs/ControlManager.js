@@ -10,9 +10,8 @@ export default class ControlManager {
         this.joystick_force = 0
         this.joystickManager = nipplejs.create({
             zone: document.getElementById(id),
-            mode: 'semi',
-            color: 'white',
-            catchDistance: 150,
+            mode: 'dynamic',
+            color: 'black',
         })
         this.joystickManager.on('move', (evt, data) => {
             if (data.direction) {

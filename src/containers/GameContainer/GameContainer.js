@@ -13,15 +13,14 @@ import {
     SET_GAME_OVER_STATE,
 } from '../../redux/actions'
 
-const gameWidth = 1125
-const gameHeight = 750
+const GAME_WIDTH = 1125
+const GAME_HEIGHT = 750
 
 class GameContainer extends Component {
     constructor(props) {
         console.log('In-Game')
         super(props)
-        this.game = new Game(gameWidth, gameHeight)
-        this.game.Initialize()
+
         this.gameCanvas = null
     }
 
@@ -42,8 +41,21 @@ class GameContainer extends Component {
     updateGameCanvas = element => {
         this.gameCanvas = element
         if(this.gameCanvas && this.gameCanvas.children.length<=0) {
-            this.gameCanvas.appendChild(this.game.getApp().view)
+            let ratio = GAME_WIDTH/GAME_HEIGHT
+            let gameWidth = 0
+            let gameHeight = 0
+            // TODO: do better dimension calculation
+            if (element.offsetHeight < element.offsetWidth) {
+                gameWidth = element.offsetHeight * ratio
+                gameHeight = element.offsetHeight
+            } else {
+                gameWidth = element.offsetWidth
+                gameHeight = element.offsetWidth / ratio
+            }
+            this.game = new Game(gameWidth, gameHeight)
+            this.game.Initialize()
             this.game.InitalizeControlManager('gameCanvas')
+            this.gameCanvas.appendChild(this.game.getApp().view)
         }
     }
 
@@ -52,22 +64,31 @@ class GameContainer extends Component {
         if (this.props.gameState && this.props.gameState.players) {
             mPlayer = this.props.gameState.players[socket.id]
         }
-        return <div className="body">
-            <h1>Game {this.props.gameRoom.id.slice(-5)}</h1>
-            <div id="game-wrapper" style={{width: gameWidth, height: gameHeight}}>
+        return <div className="fullscreen">
+            {/* <h1>Game {this.props.gameRoom.id.slice(-5)}</h1> */}
+            <div id="game-wrapper" style={{display: 'flex', height: '100%', flexDirection: 'column'}}>
                 
-                <div id="ui" style={{display: 'flex', flexDirection: 'row'}}>
-                    <ButtonGroup>
+                <div id="ui" style={{width: '100%'}}>
+                    <ButtonGroup style={{float: 'left'}}>
                         <Button variant="outline-primary" onClick={this.onQuitGameRoom}>
                             Quit
                         </Button>
                     </ButtonGroup>
-                    {mPlayer && <ProgressBar style={{flex: 1}} striped animated
+                    {mPlayer && <ProgressBar style={{flex: 1, height: '100%'}} striped animated
                         now={mPlayer.energy/mPlayer.max_energy * 100}
                         label={`${mPlayer.energy}/${mPlayer.max_energy}`}
                     />}
                 </div>
-                <div id='gameCanvas' ref={this.updateGameCanvas} style={{position: 'relative'}}/>
+                <div id='gameCanvas' ref={this.updateGameCanvas} 
+                    style={{
+                        position: 'relative', 
+                        display: 'flex', 
+                        height: '100%',
+                        alignItems: 'flex-start', 
+                        justifyContent: 'center',
+                        backgroundColor: '#f2fbff'
+                    }}
+                />
             </div>
             <Modal show={this.props.gameOverState ? true:false} onHide={this.onQuitGame}>
                 <Modal.Header closeButton>
