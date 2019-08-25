@@ -75,8 +75,11 @@ class GameContainer extends Component {
                         </Button>
                     </ButtonGroup>
                     {mPlayer && <ProgressBar style={{flex: 1, height: '100%'}} striped animated
-                        now={mPlayer.energy/mPlayer.max_energy * 100}
-                        label={`${mPlayer.energy}/${mPlayer.max_energy}`}
+                        striped={mPlayer.hp > 0}
+                        animated={mPlayer.hp > 0}
+                        variant={mPlayer.hp > 0 ? 'info' : 'danger'}
+                        now={mPlayer.hp > 0 ? mPlayer.energy/mPlayer.max_energy * 100 : 100}
+                        label={mPlayer.hp > 0 ? `${mPlayer.energy}/${mPlayer.max_energy}` : 'DEAD'}
                     />}
                 </div>
                 <div id='gameCanvas' ref={this.updateGameCanvas} 

@@ -5,7 +5,7 @@ class Player{
         this.id = id
         this.x = x
         this.y = y
-        this.max_hp = 5
+        this.max_hp = 4
         this.hp = this.max_hp
         this.max_energy = 20
         this.energy = this.max_energy
