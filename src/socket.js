@@ -6,10 +6,9 @@ import {
 	SET_GAME_OVER_STATE,
 } from './redux/actions'
 
-const socketIP = process.env.REACT_APP_SOCKET_IP || 'http://localhost'
-const socketPort = process.env.REACT_APP_SOCKET_PORT || '8000'
-// const socket = io(`${socketIP}:${socketPort}`)
-const socket = io()
+const socketIP = 'http://localhost'
+const socketPort = '8000'
+const socket = process.env.NODE_ENV === 'production' ? io() : io(`${socketIP}:${socketPort}`)
 
 // Socket listeners
 const configureSocket = dispatch => {
