@@ -29,7 +29,7 @@ export default class Player {
         if (this.hp <= 0) return
         let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
         if (socket.id === this.id) {
-            this.graphics.lineStyle(4, 0x000000, 1)
+            this.graphics.lineStyle(2, 0x000000, 1)
         } else {
             this.graphics.lineStyle(0)
         }

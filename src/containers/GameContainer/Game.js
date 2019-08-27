@@ -11,7 +11,8 @@ export default class Game {
         this.app = new Pixi.Application({
             width: gameWidth,
             height: gameHeight,
-            backgroundColor: 0xf2fbff
+            backgroundColor: 0xf2fbff,
+            antialias: true,
         })
         this.players = {}
 

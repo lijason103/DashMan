@@ -25,7 +25,9 @@ class GameContainer extends Component {
     }
 
     componentWillUnmount() {
-        this.game.removeAllListeners()
+        if (this.game) {
+            this.game.removeAllListeners()
+        }
     }
 
     onQuitGameRoom = () => {
