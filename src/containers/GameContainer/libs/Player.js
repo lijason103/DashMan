@@ -38,20 +38,16 @@ export default class Player {
 
     render(blockWidth, blockHeight) {
         this.graphics.clear()
-        if (this.hp <= 0) return
         let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
 
         if (this.x === this.x_dest && this.y === this.y_dest) {
             // Stationary
-            if (socket.id === this.id) {
-                this.graphics.lineStyle(2, 0x000000, 1)
-            } else {
+            if (this.hp > 0) {
                 this.graphics.lineStyle(0)
+                this.graphics.beginFill(colors[this.num], 1)
+                this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter/3)
+                this.graphics.endFill()
             }
-            this.graphics.beginFill(colors[this.num], 1)
-            this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter/3)
-            this.graphics.endFill()
-
             // fade the trail
             for (let i = 0; i < this.trail_graphics.length; ++i) {
                 let trail = this.trail_graphics[i]
@@ -99,15 +95,25 @@ export default class Player {
 
 
         // Draw hp bar
-        let hp_width = blockWidth * 0.8
-        let hp_height = blockHeight * 0.1
-        this.graphics.lineStyle(0)
-        this.graphics.beginFill(0xDCEDC8)
-        this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width, hp_height)
-        this.graphics.endFill()
-        this.graphics.beginFill(0x4CAF50)
-        this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width*(this.hp/this.max_hp), hp_height)
-        this.graphics.endFill()
+        if (this.hp > 0) {
+            let hp_width = blockWidth * 0.8
+            let hp_height = blockHeight * 0.1
+            let hp_color, hp_color_background
+            if (socket.id === this.id) {
+                hp_color = 0x4CAF50
+                hp_color_background = 0xDCEDC8
+            } else {
+                hp_color = 0xf44336
+                hp_color_background = 0xffcdd2
+            }
+            this.graphics.lineStyle(0)
+            this.graphics.beginFill(hp_color_background)
+            this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width, hp_height)
+            this.graphics.endFill()
+            this.graphics.beginFill(hp_color)
+            this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width*(this.hp/this.max_hp), hp_height)
+            this.graphics.endFill()
+        }
     }
 
     getX() {

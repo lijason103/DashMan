@@ -64,8 +64,9 @@ export default class Game {
         let blockWidth = this.map.getBlockWidth()
         let blockHeight = this.map.getBlockHeight()
 
-        // Update arrow indicator
-        if (mPlayer.hp > 0) {
+        // Update arrow indicator only when
+        // player is still alive and is stationary
+        if (mPlayer.hp > 0 && mPlayer.x === mPlayer.x_dest && mPlayer.y === mPlayer.y_dest) {
             if (this.controlManager.getIsUp()) {
                 this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight)
             } else if (this.controlManager.getIsDown()) {
