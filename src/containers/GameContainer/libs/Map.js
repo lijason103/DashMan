@@ -1,17 +1,30 @@
 import * as Pixi from 'pixi.js';
 
 export default class Map {
-    constructor(stage, structures, winWidth, winHeight) {
-        this.structures = structures
+    constructor(stage, winWidth, winHeight) {
+        this.structures = null
         this.winWidth = winWidth // Device window width
         this.winHeight = winHeight // Device window height
-
-        this.renderBackground(stage)
-    }
-
-    renderBackground(stage) {
+        this.stage = stage
         this.horizontalLines = []
         this.verticalLines = []
+        this.wallRectangles = []
+    }
+
+    renderBackground() {
+        if (!this.structures) return
+        // Clear
+        for (let line of this.horizontalLines) {
+            line.clear()
+        }
+        for (let line of this.verticalLines) {
+            line.clear()
+        }
+        for (let rectangle of this.wallRectangles) {
+            rectangle.clear()
+        }
+
+
         let width = this.structures[0].length
         let height = this.structures.length
         let blockHeight = this.getBlockHeight()
@@ -24,7 +37,7 @@ export default class Map {
             line.moveTo(0, i * blockHeight)
             line.lineTo(this.winWidth, i * blockHeight)
             this.horizontalLines.push(line)
-            stage.addChild(line)
+            this.stage.addChild(line)
         }
         // Vertical lines
         for (let i = 0; i < width; ++i) {
@@ -33,7 +46,7 @@ export default class Map {
             line.moveTo(i * blockWidth, 0)
             line.lineTo(i * blockWidth, this.winHeight)
             this.verticalLines.push(line)
-            stage.addChild(line)
+            this.stage.addChild(line)
         }
 
         // Walls
@@ -46,14 +59,20 @@ export default class Map {
                 if (this.structures[i][j] !== 'W') continue
                 let rectangle = new Pixi.Graphics()
                 rectangle.beginFill(0x9e9e9e)
-                rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 10)
+                rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 5)
                 rectangle.endFill()
-                stage.addChild(rectangle)
+                this.wallRectangles.push(rectangle)
+                this.stage.addChild(rectangle)
             }
         }
     }
 
     render() {
+    }
+
+    setStructures(structures) {
+        this.structures = structures
+        this.renderBackground()
     }
 
     getBlockWidth() {
@@ -62,5 +81,9 @@ export default class Map {
 
     getBlockHeight() {
         return this.winHeight/this.structures.length
+    }
+
+    isEmpty() {
+        return !this.structures ? true : false
     }
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './GameContainer.css'
 import { Button, ButtonGroup, ProgressBar, Modal } from 'react-bootstrap'
+import ReactResizeDetector from 'react-resize-detector'
 import Game from './Game'
 import { socket } from '../../index'
 import {
@@ -13,8 +14,7 @@ import {
     SET_GAME_OVER_STATE,
 } from '../../redux/actions'
 
-const GAME_WIDTH = 1125
-const GAME_HEIGHT = 750
+const RATIO = 19/10
 
 class GameContainer extends Component {
     constructor(props) {
@@ -40,25 +40,41 @@ class GameContainer extends Component {
         this.props.dispatch({ type:SET_GAME_STATE, gameState: null })
     }
 
+    onFullScreenPress = () => {
+        document.documentElement.requestFullscreen()
+    }
+
     updateGameCanvas = element => {
         this.gameCanvas = element
         if(this.gameCanvas && this.gameCanvas.children.length<=0) {
-            let ratio = GAME_WIDTH/GAME_HEIGHT
-            let gameWidth = 0
-            let gameHeight = 0
-            // TODO: do better dimension calculation
-            if (element.offsetHeight < element.offsetWidth) {
-                gameWidth = element.offsetHeight * ratio
-                gameHeight = element.offsetHeight
-            } else {
-                gameWidth = element.offsetWidth
-                gameHeight = element.offsetWidth / ratio
-            }
-            this.game = new Game(gameWidth, gameHeight)
+            let gameDimension = this.calculateGameDimension()
+            this.game = new Game(gameDimension.gameWidth, gameDimension.gameHeight)
             this.game.Initialize()
             this.game.InitalizeControlManager('gameCanvas')
             this.gameCanvas.appendChild(this.game.getApp().view)
         }
+    }
+
+    onResize = (width, height) => {
+        if (this.gameCanvas) {
+            let gameDimension = this.calculateGameDimension()
+            this.game.resize(gameDimension.gameWidth, gameDimension.gameHeight)
+        }
+    }
+
+    calculateGameDimension() {
+        let element = this.gameCanvas
+        let gameWidth = 0
+        let gameHeight = 0
+        // TODO: do better dimension calculation
+        if (element.offsetHeight < element.offsetWidth) {
+            gameWidth = element.offsetHeight * RATIO
+            gameHeight = element.offsetHeight
+        } else {
+            gameWidth = element.offsetWidth
+            gameHeight = element.offsetWidth / RATIO
+        }
+        return {gameWidth, gameHeight}
     }
 
     render() {
@@ -67,14 +83,16 @@ class GameContainer extends Component {
             mPlayer = this.props.gameState.players[socket.id]
         }
         return <div className="fullscreen">
-            {/* <h1>Game {this.props.gameRoom.id.slice(-5)}</h1> */}
+            <ReactResizeDetector handleWidth handleHeight onResize={this.onResize} />
             <div id="game-wrapper" style={{display: 'flex', height: '100%', flexDirection: 'column'}}>
-                
                 <div id="ui" style={{width: '100%'}}>
                     <ButtonGroup style={{float: 'left'}}>
                         <Button variant="outline-primary" onClick={this.onQuitGameRoom}>
                             Quit
                         </Button>
+                        {window.innerWidth > window.innerHeight && <Button variant="outline-primary" onClick={this.onFullScreenPress}>
+                            Full Screen
+                        </Button>}
                     </ButtonGroup>
                     {mPlayer && <ProgressBar style={{flex: 1, height: '100%'}}
                         striped={mPlayer.hp > 0}

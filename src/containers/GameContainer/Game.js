@@ -17,7 +17,7 @@ export default class Game {
         this.players = {}
 
         // Map
-        this.map = null
+        this.map = new Map(this.app.stage, this.app.screen.width, this.app.screen.height)
 
         // Arrow Indicator
         this.arrowIndicator = new ArrowIndicator(this.app.stage)
@@ -58,7 +58,7 @@ export default class Game {
 
     gameLoop(deltaMS) {
         let elapsedMS = this.app.ticker.elapsedMS
-        if (!this.map) return
+        if (this.map.isEmpty()) return
         this.render()
         let mPlayer = this.players[socket.id]
         let blockWidth = this.map.getBlockWidth()
@@ -96,7 +96,9 @@ export default class Game {
     handle_game_state() {
         socket.on('IN_GAME_STATE', state => {
             // Create map if it hasn't been created yet
-            if (!this.map) this.map = new Map(this.app.stage, state.map.structures, this.app.screen.width, this.app.screen.height)
+            if (this.map.isEmpty()) {
+                this.map.setStructures(state.map.structures)
+            }
             let player_num = 0
             for (let property in state.players) {
                 let sPlayer = state.players[property]
@@ -122,7 +124,15 @@ export default class Game {
         })
     }
 
-    // ***** Getters *****
+    resize(width, height) {
+        this.app.renderer.resize(width, height)
+        this.app.stage.width = width
+        this.app.stage.height = height
+        if (!this.map.isEmpty()) {
+            this.map.renderBackground()
+        }
+    }
+
     getApp() {
         return this.app
     }
