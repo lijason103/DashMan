@@ -26,14 +26,17 @@ export default class ArrowIndicator {
         }
     }
 
-    update(elapsedMS, direction, chargeRate, blockSize) {
+    update(elapsedMS, direction, chargeRate, blockSize, currentEnergy) {
         let addLength = elapsedMS * chargeRate * (blockSize/1000)
         if (direction !== this.direction) {
             this.length = addLength
             this.direction = direction
         } else {
-            this.length += addLength
-            this.numOfBlock = this.length / blockSize
+            // only allow to increase the length if there is enough energy
+            if ((this.length + addLength) / blockSize <= currentEnergy) {
+                this.length += addLength
+                this.numOfBlock = this.length / blockSize
+            }
         }
     }
 

@@ -6,7 +6,7 @@ const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x795548]
 const trail_size = 3
 
 export default class Player {
-    constructor(stage, num, id, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled) {
+    constructor(stage, num, id, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy) {
         this.stage = stage
         this.num = num
         this.x = x
@@ -18,6 +18,7 @@ export default class Player {
         this.x_dest = x_dest
         this.y_dest = y_dest
         this.distanceTraveled = distanceTraveled
+        this.energy = energy
 
         // For graphics
         this.last_x_dest = x_dest
@@ -27,13 +28,14 @@ export default class Player {
         this.stage.addChild(this.graphics)
     }
 
-    update(x, y, hp, x_dest, y_dest, distanceTraveled) {
+    update(x, y, hp, x_dest, y_dest, distanceTraveled, energy) {
         this.x = x
         this.y = y
         this.hp = hp
         this.x_dest = x_dest
         this.y_dest = y_dest
         this.distanceTraveled = distanceTraveled
+        this.energy = energy
     }
 
     render(blockWidth, blockHeight) {

@@ -68,13 +68,13 @@ export default class Game {
         // player is still alive and is stationary
         if (mPlayer.hp > 0 && mPlayer.x === mPlayer.x_dest && mPlayer.y === mPlayer.y_dest) {
             if (this.controlManager.getIsUp()) {
-                this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight)
+                this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight, mPlayer.energy)
             } else if (this.controlManager.getIsDown()) {
-                this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight)
+                this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight, mPlayer.energy)
             } else if (this.controlManager.getIsRight()) {
-                this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth)
+                this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth, mPlayer.energy)
             } else if (this.controlManager.getIsLeft()) {
-                this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth)
+                this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth, mPlayer.energy)
             } else {
                 // Send move request to server
                 let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
@@ -116,7 +116,8 @@ export default class Game {
                             sPlayer.max_hp,
                             sPlayer.x_dest, 
                             sPlayer.y_dest, 
-                            sPlayer.distanceTraveled
+                            sPlayer.distanceTraveled,
+                            sPlayer.energy
                         ))
                     player_num++
                 } else {
@@ -127,7 +128,8 @@ export default class Game {
                         sPlayer.hp, 
                         sPlayer.x_dest, 
                         sPlayer.y_dest,
-                        sPlayer.distanceTraveled
+                        sPlayer.distanceTraveled,
+                        sPlayer.energy
                     )
                 } 
             }
