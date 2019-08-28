@@ -3,7 +3,7 @@ const Map = require('./GameObjects/Map')
 const config = require('../config.json')
 
 class GameController {
-    constructor(io, room_id) {
+    constructor(io, room_id, clients) {
         this.io = io
         this.room_id = room_id
         console.log("A game controller is created")
@@ -15,7 +15,9 @@ class GameController {
         // Players
         this.players = {}
         let p_i = 1
-        for (let id in this.io.sockets.adapter.rooms[this.room_id].sockets) {
+        for (let client of clients) {
+            let id = client.id
+            let name = client.name
             let x, y
             switch(p_i){
                 case 1: x = 1; y = 1; break // left top corner
@@ -25,7 +27,7 @@ class GameController {
                 case 5: x = Math.round(this.map.getWidth()/2); y = 1; break // middle top
                 case 6: x = Math.round(this.map.getWidth()/2); y = this.map.getHeight()-2; break // middle bottom
             }
-            this.players[id] = new Player(id, x, y)
+            this.players[id] = new Player(id, name, x, y)
             p_i++
         }
     }

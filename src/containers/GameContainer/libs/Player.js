@@ -6,12 +6,13 @@ const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x795548]
 const trail_size = 3
 
 export default class Player {
-    constructor(stage, num, id, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy) {
+    constructor(stage, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy) {
         this.stage = stage
         this.num = num
         this.x = x
         this.y = y
         this.id = id
+        this.name = name
         this.hp = hp
         this.max_hp = max_hp
         this.chargeRate = chargeRate
@@ -25,7 +26,16 @@ export default class Player {
         this.last_y_dest = y_dest
         this.graphics = new Pixi.Graphics()
         this.trail_graphics = []
+        this.textStyle = new Pixi.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fontWeight: 'bold',
+            fill: [socket.id === this.id ? 0x4CAF50 : 0xf44336]
+        })
+        this.name_graphics = new Pixi.Text(this.name, this.textStyle)
+        this.name_graphics.zIndex = 1
         this.stage.addChild(this.graphics)
+        this.stage.addChild(this.name_graphics)
     }
 
     update(x, y, hp, x_dest, y_dest, distanceTraveled, energy) {
@@ -59,7 +69,7 @@ export default class Player {
                     this.trail_graphics.splice(i, 1)
                     i--
                 } else {
-                    trail.alpha -= 0.01
+                    trail.alpha -= 0.05
                 }
             }
         } else { 
@@ -96,8 +106,8 @@ export default class Player {
 
 
 
-        // Draw hp bar
         if (this.hp > 0) {
+            // Draw hp bar
             let hp_width = blockWidth * 0.8
             let hp_height = blockHeight * 0.1
             let hp_color, hp_color_background
@@ -115,6 +125,10 @@ export default class Player {
             this.graphics.beginFill(hp_color)
             this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width*(this.hp/this.max_hp), hp_height)
             this.graphics.endFill()
+
+            // Draw name
+            this.name_graphics.x = this.x * blockWidth + (blockWidth - this.name_graphics.width)/2
+            this.name_graphics.y = this.y * blockHeight - 20
         }
     }
 

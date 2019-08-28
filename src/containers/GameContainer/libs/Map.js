@@ -33,7 +33,6 @@ export default class Map {
         // Horizontal lines
         for (let i = 0; i < height; ++i) {
             let line = new Pixi.Graphics()
-            line.zIndex = -10
             line.lineStyle(1, 0xc1c8cc, 1)
             line.moveTo(0, i * blockHeight)
             line.lineTo(this.winWidth, i * blockHeight)
@@ -43,7 +42,6 @@ export default class Map {
         // Vertical lines
         for (let i = 0; i < width; ++i) {
             let line = new Pixi.Graphics()
-            line.zIndex = -10
             line.lineStyle(1, 0xc1c8cc, 1)
             line.moveTo(i * blockWidth, 0)
             line.lineTo(i * blockWidth, this.winHeight)
@@ -60,6 +58,7 @@ export default class Map {
             for (let j = 0; j < width; ++j) {
                 if (this.structures[i][j] !== 'W') continue
                 let rectangle = new Pixi.Graphics()
+                rectangle.zIndex = 0
                 rectangle.beginFill(0x9e9e9e)
                 rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 5)
                 rectangle.endFill()

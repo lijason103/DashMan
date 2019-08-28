@@ -17,10 +17,17 @@ export default class Game {
         this.players = {}
 
         // Map
-        this.map = new Map(this.app.stage, this.app.screen.width, this.app.screen.height)
+        this.mapContainer = new Pixi.Container()
+        this.app.stage.addChild(this.mapContainer)
+        this.map = new Map(this.mapContainer, this.app.screen.width, this.app.screen.height)
 
         // Arrow Indicator
-        this.arrowIndicator = new ArrowIndicator(this.app.stage)
+        this.arrowIndicatorContainer = new Pixi.Container()
+        this.app.stage.addChild(this.arrowIndicatorContainer)
+        this.arrowIndicator = new ArrowIndicator(this.arrowIndicatorContainer)
+
+        this.playersContainer = new Pixi.Container()
+        this.app.stage.addChild(this.playersContainer)
 
         // Handle socket listeners
         this.handle_game_state()
@@ -106,9 +113,10 @@ export default class Game {
                     // New player
                     this.players[sPlayer.id] = (
                         new Player(
-                            this.app.stage,
+                            this.playersContainer,
                             player_num,
                             sPlayer.id,
+                            sPlayer.name,
                             sPlayer.x, 
                             sPlayer.y, 
                             sPlayer.hp, 

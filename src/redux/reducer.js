@@ -3,6 +3,7 @@ import {
 	SET_GAME_ROOM,
 	SET_GAME_STATE,
 	SET_GAME_OVER_STATE,
+	SET_PLAYER_NAME,
 } from './actions'
 
 const reducer = (
@@ -11,6 +12,7 @@ const reducer = (
 		gameRoom: null,
 		gameState: null,
 		gameOverState: null,
+		playerName: 'unnamed'
     },
     action
 	) => {
@@ -27,6 +29,9 @@ const reducer = (
 		case SET_GAME_OVER_STATE:
 				state = { ...state, gameOverState: action.gameOverState}
 				break
+		case SET_PLAYER_NAME:
+			state = { ...state, playerName: action.playerName}
+			break
 		default:
 			break;
 		}

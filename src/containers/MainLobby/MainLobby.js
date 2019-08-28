@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Button, ButtonGroup, Table } from 'react-bootstrap'
+import { Button, ButtonGroup, Table, InputGroup, FormControl } from 'react-bootstrap'
 import './MainLobby.css'
+import { SET_PLAYER_NAME } from '../../redux/actions'
 import {
     createGameRoom,
     refreshRooms,
@@ -9,6 +10,10 @@ import {
 } from '../../socket'
 
 class MainLobby extends Component {
+    changePlayerName = name => {
+        this.props.dispatch({ type:SET_PLAYER_NAME, playerName: name })
+    }
+
     componentDidMount() {
         refreshRooms()
         console.log("Main Lobby")
@@ -17,10 +22,18 @@ class MainLobby extends Component {
     render() {
         return <div className="body">
             <h1>Lobby</h1>
-            <ButtonGroup>
-                <Button variant="outline-primary" onClick={createGameRoom}>Create room</Button>
-                <Button variant="outline-primary" onClick={refreshRooms}>Refresh rooms</Button>
-            </ButtonGroup>
+            <div style={{display: 'flex', flexDirection: 'row'}}>
+                <ButtonGroup>
+                    <Button variant="outline-primary" onClick={() => createGameRoom(this.props.playerName)}>Create room</Button>
+                    <Button variant="outline-primary" onClick={refreshRooms}>Refresh rooms</Button>
+                </ButtonGroup>
+                <InputGroup style={{width: '300px'}}>
+                    <InputGroup.Prepend>
+                        <InputGroup.Text>Name</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <FormControl value={this.props.playerName} onChange={event => this.changePlayerName(event.target.value)}/>
+                </InputGroup>
+            </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -38,7 +51,7 @@ class MainLobby extends Component {
                             <td>{room.status}</td>
                             <td>
                                 {room.clients.length < room.max_clients && room.status !== 'IN-GAME' &&
-                                    <Button onClick={() => joinRoom(room.id)}>JOIN</Button>
+                                    <Button onClick={() => joinRoom(room.id, this.props.playerName)}>JOIN</Button>
                                 }
                             </td>
                         </tr>
@@ -52,6 +65,7 @@ class MainLobby extends Component {
 
 const mapStateToProps = state => ({
     gameRooms: state.gameRooms,
+    playerName: state.playerName,
 });
 
 

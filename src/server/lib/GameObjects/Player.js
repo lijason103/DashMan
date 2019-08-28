@@ -1,8 +1,9 @@
 const travel_speed = 25 // 25
 
 class Player{
-    constructor(id, x, y) {
+    constructor(id, name, x, y) {
         this.id = id
+        this.name = name
         this.x = x
         this.y = y
         this.max_hp = 4
@@ -123,6 +124,7 @@ class Player{
     getAll() {
         return {
             id: this.id,
+            name: this.name,
             x: this.x,
             y: this.y,
             max_hp: this.max_hp,

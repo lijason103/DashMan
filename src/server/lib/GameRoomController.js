@@ -17,16 +17,16 @@ class GameRoomController {
     // ***** Handlers *****
 
     handle_create_room() {
-        this.socket.on('CREATE_ROOM', () => {
+        this.socket.on('CREATE_ROOM', name => {
             let room_id = `${GAME_ROOM}-${uuidv4()}`
             this.socket.leaveAll()
             this.socket.join(room_id)
     
-            let socket_rooms = this.io.sockets.adapter.rooms
             let clients = []
-            for (let property in socket_rooms[room_id].sockets) {
-                clients.push(property)
-            }
+            clients.push({
+                id: this.socket.id,
+                name: this.purifyName(name),
+            })
             GameRoomController.game_rooms[room_id] = {
                 id: room_id,
                 status: STATES.LOBBY,
@@ -56,7 +56,7 @@ class GameRoomController {
     }
 
     handle_join_room() {
-        this.socket.on('JOIN_ROOM', room_id => {
+        this.socket.on('JOIN_ROOM', (room_id, name) => {
             if (room_id && room_id.startsWith(GAME_ROOM) && this.io.sockets.adapter.rooms.hasOwnProperty(room_id)) {
                 if (GameRoomController.game_rooms[room_id] && 
                     (GameRoomController.game_rooms[room_id].status == 'IN-GAME' || GameRoomController.game_rooms[room_id].clients.length >= MAX_PLAYERS)) { return }
@@ -66,6 +66,10 @@ class GameRoomController {
                 this.socket.join(room_id)
                 this.updateGameRoom(room_id)
                 let room = GameRoomController.game_rooms[room_id]
+                room.clients = [...room.clients, {
+                    id: this.socket.id,
+                    name: this.purifyName(name)
+                }]
                 this.io.in(room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
                 this.current_room_id = room_id
             }
@@ -77,6 +81,7 @@ class GameRoomController {
             console.log(this.socket.id, " <LEFT ALL ROOMS> ")
             this.socket.leaveAll()
             this.socket.emit('GAME_ROOM', null) // Tell the client it's no longer in a room
+            this.removePlayer()
             this.updateGameRoom(this.current_room_id)
             let room = GameRoomController.game_rooms[this.current_room_id]
             if (room) {
@@ -93,14 +98,15 @@ class GameRoomController {
             // Check if the game room actually exist
             if (this.current_room_id == null || !GameRoomController.game_rooms.hasOwnProperty(this.current_room_id)) return
             // Only host can start
-            if (this.socket.id != GameRoomController.game_rooms[this.current_room_id].host) return
+            if (this.socket.id !== GameRoomController.game_rooms[this.current_room_id].host.id) return
 
             this.updateGameRoom(this.current_room_id, STATES.INGAME)
             let room = GameRoomController.game_rooms[this.current_room_id]
             this.io.in(this.current_room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
 
             // Create a game controller to handle the game for this particular room
-            GameRoomController.game_rooms[this.current_room_id].gameController = new GameController(this.io, this.current_room_id)
+            let clients = GameRoomController.game_rooms[this.current_room_id].clients
+            GameRoomController.game_rooms[this.current_room_id].gameController = new GameController(this.io, this.current_room_id, clients)
             GameRoomController.game_rooms[this.current_room_id].gameController.Initialize(this.onGameOver)
         })
     }
@@ -110,6 +116,8 @@ class GameRoomController {
             console.log(this.socket.id, 'is disconnected from game room')
             this.socket.leaveAll()
             if (this.current_room_id != null) {
+                // Remove user from the room
+                this.removePlayer()
                 this.updateGameRoom(this.current_room_id)
                 let room = GameRoomController.game_rooms[this.current_room_id]
                 if (room) {
@@ -135,6 +143,30 @@ class GameRoomController {
 
     // ***** Helpers *****
     
+    purifyName(name) {
+        if (!name) return 'unnamed'
+        name = name.trim()
+        name = name === '' ? 'unnamed' : name
+        name = name.length > 10 ? name.substring(0, 10) : name
+        return name
+    }
+
+    removePlayer() {
+        // Remove user from the room
+        let room = GameRoomController.game_rooms[this.current_room_id]
+        if (!room) return
+        let index = -1
+        for (let i = 0; i < room.clients.length; ++i) {
+            if (room.clients[i].id === this.socket.id) {
+                index = i
+                break
+            }
+        }
+        if (index > -1) {
+            room.clients.splice(index, 1)
+        }
+    }
+
     updateGameRoom(room_id, newState) {
         let socket_rooms = this.io.sockets.adapter.rooms
         // Delete the game room if it is no longer in socket_room because there are no more connected clients
@@ -153,27 +185,21 @@ class GameRoomController {
             return
         }
 
-        // Get a list of connected clients
-        let clients = []
-        for (let property in socket_rooms[room_id].sockets) {
-            clients.push(property)
-        }
-    
+        // Update host if needed
         // Reassign the host if the old host is gone
         let host = null
-        for (let client in clients) {
+        for (let client in GameRoomController.game_rooms[room_id].clients) {
             // Old host still exist
-            if (client == GameRoomController.game_rooms[room_id].host) {
+            if (client.id == GameRoomController.game_rooms[room_id].host) {
                 host = GameRoomController.game_rooms[room_id].host
                 break
             }
         }
-        if (!host) host = clients[0]
+        if (!host) host = GameRoomController.game_rooms[room_id].clients[0]
 
         // Update the status, clients and host in case of client disconnected
         if (GameRoomController.game_rooms.hasOwnProperty(room_id)) {
             GameRoomController.game_rooms[room_id].status = newState ? newState : GameRoomController.game_rooms[room_id].status
-            GameRoomController.game_rooms[room_id].clients = clients
             GameRoomController.game_rooms[room_id].host = host
         }
     }

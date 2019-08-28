@@ -34,7 +34,7 @@ class GameRoomLobby extends Component {
                 <Button variant="outline-primary" onClick={this.onBackPress}>
                     Back to main lobby
                 </Button>
-                {this.props.gameRoom.host === socket.id && <Button variant="outline-primary" onClick={this.onStartPress}>
+                {this.props.gameRoom.host.id === socket.id && <Button variant="outline-primary" onClick={this.onStartPress}>
                     Start Game
                 </Button>}
             </ButtonGroup>
@@ -43,14 +43,16 @@ class GameRoomLobby extends Component {
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Name</th>
                         <th>Host</th>
                     </tr>
                 </thead>
                 <tbody>
                     {this.props.gameRoom && this.props.gameRoom.clients.map((client, index) => {
                         return <tr key={index}>
-                            <td>{socket.id === client ? <b>{client}</b> : client}</td>
-                            <td>{this.props.gameRoom.host === client ? 'HOST' : ''}</td>
+                            <td>{socket.id === client.id ? <b>{client.id}</b> : client.id}</td>
+                            <td>{client.name}</td>
+                            <td>{this.props.gameRoom.host.id === client.id ? 'HOST' : ''}</td>
                         </tr>
                     })}
                 </tbody>

@@ -37,11 +37,11 @@ const configureSocket = dispatch => {
 	return socket;
 };
 
-export const createGameRoom = () => socket.emit('CREATE_ROOM')
+export const createGameRoom = playerName => socket.emit('CREATE_ROOM', playerName)
 
 export const refreshRooms = () => socket.emit('GET_ROOMS')
 
-export const joinRoom = room_id => socket.emit('JOIN_ROOM', room_id)
+export const joinRoom = (room_id, playerName) => socket.emit('JOIN_ROOM', room_id, playerName)
 
 export const leaveRoom = () => socket.emit('LEAVE_ROOM')
 
