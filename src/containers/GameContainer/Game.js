@@ -78,7 +78,6 @@ export default class Game {
                 // Send move request to server
                 let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
                 if (numOfBlocks > 0) {
-                    console.log(numOfBlocks)
                     socket.emit('MOVE_CHAR', {
                         direction: this.arrowIndicator.direction,
                         steps: numOfBlocks
@@ -113,12 +112,22 @@ export default class Game {
                             sPlayer.y, 
                             sPlayer.hp, 
                             sPlayer.chargeRate,
-                            sPlayer.max_hp
+                            sPlayer.max_hp,
+                            sPlayer.x_dest, 
+                            sPlayer.y_dest, 
+                            sPlayer.distanceTraveled
                         ))
                     player_num++
                 } else {
                     // Update player
-                    this.players[sPlayer.id].update(sPlayer.x, sPlayer.y, sPlayer.hp)
+                    this.players[sPlayer.id].update(
+                        sPlayer.x, 
+                        sPlayer.y, 
+                        sPlayer.hp, 
+                        sPlayer.x_dest, 
+                        sPlayer.y_dest,
+                        sPlayer.distanceTraveled
+                    )
                 } 
             }
         })

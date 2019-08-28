@@ -1,4 +1,4 @@
-const travel_speed = 25
+const travel_speed = 25 // 25
 
 class Player{
     constructor(id, x, y) {

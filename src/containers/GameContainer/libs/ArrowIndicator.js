@@ -12,7 +12,7 @@ export default class ArrowIndicator {
     render(startX, startY) {
         this.line.clear()
         if (this.direction) {
-            this.line.lineStyle(2, 0xFF00FF, 0.5)
+            this.line.lineStyle(2, 0xf44336, 1)
             this.line.moveTo(startX, startY)
             if (this.direction === 'up'){
                 this.line.lineTo(startX, startY - this.length)
