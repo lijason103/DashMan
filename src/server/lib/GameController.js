@@ -100,7 +100,7 @@ class GameController {
             let player = this.players[property].getAll()
             players[property] = player
             if (player.hp > 0) {
-                winner = player.id
+                winner = player.name
             }
         }
         let payload = {
