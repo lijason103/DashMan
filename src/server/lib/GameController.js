@@ -117,14 +117,17 @@ class GameController {
     // ************************
 
     handle_move_char() {
-        for (let property in this.io.sockets.sockets) {
-            let socket = this.io.sockets.sockets[property]
-            socket.on('MOVE_CHAR', payload => {
-                let direction = payload.direction
-                let steps = payload.steps
-                let player = this.players[socket.id]
-                if (player) player.moveDest(this.map, direction, steps)
-            })
+        for (let property in this.players) {
+            let player = this.players[property]
+            let socket = this.io.sockets.sockets[player.id]
+            if (socket) {
+                socket.on('MOVE_CHAR', payload => {
+                    let direction = payload.direction
+                    let steps = payload.steps
+                    let player = this.players[socket.id]
+                    if (player) player.moveDest(this.map, direction, steps)
+                })
+            }
         }
     }
 
@@ -134,6 +137,7 @@ class GameController {
         //       'disconnect' listener in GameRoomController
         console.log(socketId, 'is disconnected from game')
         this.players[socketId].hp = 0
+        this.io.sockets.sockets[socketId].removeAllListeners(['MOVE_CHAR'])
     }
 
     
@@ -144,9 +148,12 @@ class GameController {
         if (this.sendUpdatesTimer) clearInterval(this.sendUpdatesTimer)
         
         // Remove MOVE_CHAR listener
-        for (let property in this.io.sockets.sockets) {
-            let socket = this.io.sockets.sockets[property]
-            socket.removeAllListeners(['MOVE_CHAR'])
+        for (let property in this.players) {
+            let player = this.players[property]
+            let socket = this.io.sockets.sockets[player.id]
+            if (socket) {
+                socket.removeAllListeners(['MOVE_CHAR'])
+            }
         }
     }
 

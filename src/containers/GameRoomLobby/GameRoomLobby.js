@@ -42,17 +42,19 @@ class GameRoomLobby extends Component {
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Name</th>
-                        <th>Host</th>
+                        <th>#</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {this.props.gameRoom && this.props.gameRoom.clients.map((client, index) => {
                         return <tr key={index}>
+                            <td>{socket.id === client.id ? <b>{client.name}</b> : client.name}</td>
                             <td>{socket.id === client.id ? <b>{client.id}</b> : client.id}</td>
-                            <td>{client.name}</td>
-                            <td>{this.props.gameRoom.host.id === client.id ? 'HOST' : ''}</td>
+                            <td>
+                                <b style={{color: 'gold'}}>{this.props.gameRoom.host.id === client.id ? 'HOST' : ''}</b>
+                            </td>
                         </tr>
                     })}
                 </tbody>
