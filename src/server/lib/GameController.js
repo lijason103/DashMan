@@ -137,7 +137,10 @@ class GameController {
         //       'disconnect' listener in GameRoomController
         console.log(socketId, 'is disconnected from game')
         this.players[socketId].hp = 0
-        this.io.sockets.sockets[socketId].removeAllListeners(['MOVE_CHAR'])
+        let socket = this.io.sockets.sockets[socketId]
+        if (socket) {
+            this.io.sockets.sockets[socketId].removeAllListeners(['MOVE_CHAR'])
+        }
     }
 
     

@@ -27,10 +27,7 @@ class MainLobby extends Component {
                     <Button variant="outline-primary" onClick={() => createGameRoom(this.props.playerName)}>Create room</Button>
                     <Button variant="outline-primary" onClick={refreshRooms}>Refresh rooms</Button>
                 </ButtonGroup>
-                <InputGroup style={{width: '300px'}}>
-                    <InputGroup.Prepend>
-                        <InputGroup.Text>Name</InputGroup.Text>
-                    </InputGroup.Prepend>
+                <InputGroup>
                     <FormControl value={this.props.playerName} onChange={event => this.changePlayerName(event.target.value)}/>
                 </InputGroup>
             </div>

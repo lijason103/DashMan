@@ -13,6 +13,8 @@ export default class Game {
             height: gameHeight,
             backgroundColor: 0xf2fbff,
             antialias: true,
+            autoDensity: true,
+            resolution: window.devicePixelRatio,
         })
         this.players = {}
 
@@ -150,6 +152,9 @@ export default class Game {
         this.app.stage.height = height
         if (!this.map.isEmpty()) {
             this.map.renderBackground()
+        }
+        for (let property in this.players) {
+            this.players[property].resize(this.app.renderer.resolution)
         }
     }
 

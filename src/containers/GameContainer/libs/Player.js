@@ -4,6 +4,7 @@ import { socket } from '../../../index'
 // blue, red, green, orange, purple, brown
 const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x795548]
 const trail_size = 3
+const font_size = 17
 
 export default class Player {
     constructor(stage, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy) {
@@ -50,6 +51,7 @@ export default class Player {
 
     render(blockWidth, blockHeight) {
         this.graphics.clear()
+        
         let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
 
         if (this.x === this.x_dest && this.y === this.y_dest) {
@@ -84,7 +86,8 @@ export default class Player {
             } else {
                 trail = this.trail_graphics[this.trail_graphics.length-1]
             }
-            trail.lineStyle(0.5, colors[this.num], 0.3)
+            trail.clear()
+            trail.lineStyle(1, colors[this.num], 0.5)
             trail.beginFill(0xffffff, 1)
             if (this.x !== this.x_dest) {
                 let width = this.distanceTraveled * blockWidth
@@ -128,7 +131,9 @@ export default class Player {
 
             // Draw name
             this.name_graphics.x = this.x * blockWidth + (blockWidth - this.name_graphics.width)/2
-            this.name_graphics.y = this.y * blockHeight - 20
+            this.name_graphics.y = this.y * blockHeight - this.name_graphics.height
+        } else {
+            this.name_graphics.visible = false
         }
     }
 
@@ -150,5 +155,9 @@ export default class Player {
 
     getChargeRate() {
         return this.chargeRate
+    }
+
+    resize(resolution) {
+        this.name_graphics.style.fontSize = (font_size / resolution) + "px"
     }
 }
