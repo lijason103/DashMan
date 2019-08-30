@@ -76,7 +76,9 @@ export default class Game {
         // Update arrow indicator only when
         // player is still alive and is stationary
         if (mPlayer.hp > 0 && mPlayer.x === mPlayer.x_dest && mPlayer.y === mPlayer.y_dest) {
-            if (this.controlManager.getIsUp()) {
+            if (this.controlManager.getIsCancelled()) {
+                this.arrowIndicator.reset()
+            } else if (this.controlManager.getIsUp()) {
                 this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight, mPlayer.energy)
             } else if (this.controlManager.getIsDown()) {
                 this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight, mPlayer.energy)

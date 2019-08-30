@@ -1,13 +1,14 @@
 import nipplejs from 'nipplejs'
 import Keyboard from './Keyboard'
 
-const forceThresh = 0.3
+const forceThresh = 1
 
 export default class ControlManager {
     constructor(id) {
         // Joystick
         this.joystick_angle = null
         this.joystick_force = 0
+        this.isCancelled = false
         this.joystickManager = nipplejs.create({
             zone: document.getElementById(id),
             mode: 'dynamic',
@@ -15,6 +16,11 @@ export default class ControlManager {
         })
         this.joystickManager.on('move', (evt, data) => {
             if (data.direction) {
+                if (data.force < forceThresh && this.joystick_force >= forceThresh) {
+                    this.isCancelled = true
+                } else if (this.joystick_force >= forceThresh) {
+                    this.isCancelled = false
+                }
                 this.joystick_angle = data.direction.angle
                 this.joystick_force = data.force
             }
@@ -22,6 +28,7 @@ export default class ControlManager {
         this.joystickManager.on('end', (evt, data) => {
             this.joystick_angle = null
             this.joystick_force = 0
+            this.isCancelled = false
         })
 
         // Keyboard
@@ -58,6 +65,10 @@ export default class ControlManager {
             return true
         }
         return false
+    }
+
+    getIsCancelled() {
+        return this.isCancelled
     }
 
     destroy() {
