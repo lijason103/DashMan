@@ -1,7 +1,7 @@
 import nipplejs from 'nipplejs'
 import Keyboard from './Keyboard'
 
-const forceThresh = 1
+const forceThresh = 0.7
 
 export default class ControlManager {
     constructor(id) {

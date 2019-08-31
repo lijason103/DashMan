@@ -64,7 +64,7 @@ export default class Player {
                         this.rings.push(0)
                     } else {
                         for (let i = 0; i < this.rings.length; ++i) {
-                            this.rings[i] += blockSize * 0.002
+                            this.rings[i] += blockSize * 0.005
                             if (this.rings[i] > diameter) {
                                 this.rings.splice(i, 1)
                                 i--

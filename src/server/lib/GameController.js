@@ -69,7 +69,7 @@ class GameController {
             if (player.hp > 0) numOfAlive++
         }
         // Last man standing wins
-        if (numOfAlive === 1 && !this.sendGameOverTimer) {
+        if (numOfAlive === 1 && !this.sendGameOverTimer && process.env.NODE_ENV === 'production') {
             this.send_gameOver()
         }
     }
