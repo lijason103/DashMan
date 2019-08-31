@@ -17,6 +17,7 @@ class Player{
 
         this.damagedPlayers = {} // A list of players that's been damaged by current player during the current movement
         this.distanceTraveled = 0 // The distance between original location and current location
+        this.isCharging = false
     }
 
     regenerateEnergy(elapsedMS) {
@@ -136,6 +137,7 @@ class Player{
             energy: Math.floor(this.energy),
             max_energy: this.max_energy,
             distanceTraveled: this.distanceTraveled,
+            isCharging: this.isCharging,
         }
     }
 }

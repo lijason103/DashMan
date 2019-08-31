@@ -5,6 +5,11 @@ const forceThresh = 1
 
 export default class ControlManager {
     constructor(id) {
+        // Callbacks
+        this.onCancelledCallback = null
+        this.onReachedThreshCallback = null
+        this.onChangeDirectionCallback = null
+
         // Joystick
         this.joystick_angle = null
         this.joystick_force = 0
@@ -18,8 +23,11 @@ export default class ControlManager {
             if (data.direction) {
                 if (data.force < forceThresh && this.joystick_force >= forceThresh) {
                     this.isCancelled = true
+                    if (this.onCancelledCallback) this.onCancelledCallback()
                 } else if (this.joystick_force >= forceThresh) {
                     this.isCancelled = false
+                } else if (this.joystick_force < forceThresh && data.force >= forceThresh) {
+                    if (this.onReachedThreshCallback) this.onReachedThreshCallback()
                 }
                 this.joystick_angle = data.direction.angle
                 this.joystick_force = data.force
@@ -30,12 +38,29 @@ export default class ControlManager {
             this.joystick_force = 0
             this.isCancelled = false
         })
+        this.joystickManager.on('dir', (evt, data) => {
+            if (data.force >= forceThresh && this.joystick_angle !== data.direction.angle) {
+                if (this.onChangeDirectionCallback) this.onChangeDirectionCallback()
+            }
+        })
 
         // Keyboard
         this.upKey = Keyboard('ArrowUp')
         this.downKey = Keyboard('ArrowDown')
         this.rightKey = Keyboard('ArrowRight')
         this.leftKey = Keyboard('ArrowLeft')
+    }
+
+    setOnCancelledCallback(onCancelledCallback) {
+        this.onCancelledCallback = onCancelledCallback
+    }
+
+    setOnReachedThreshCallback(onReachedThreshCallback) {
+        this.onReachedThreshCallback = onReachedThreshCallback
+    }
+
+    setOnChangeDirectionCallback(onChangeDirectionCallback) {
+        this.onChangeDirectionCallback = onChangeDirectionCallback
     }
     
     getIsUp() {

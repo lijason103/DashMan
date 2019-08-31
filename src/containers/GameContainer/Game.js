@@ -43,6 +43,16 @@ export default class Game {
     // This should be called after the canvas is loaded 
     InitalizeControlManager(id) {
         this.controlManager = new ControlManager(id)
+        this.controlManager.setOnCancelledCallback(() => {
+            socket.emit('STOP_CHARGE', {})
+        })
+        this.controlManager.setOnReachedThreshCallback(() => {
+            socket.emit('START_CHARGE', {})
+        })
+        this.controlManager.setOnChangeDirectionCallback(() => {
+            socket.emit('STOP_CHARGE', {})
+            setTimeout(() => socket.emit('START_CHARGE', {}), 200)
+        })
     }
 
     // ***** Render game *****
@@ -129,7 +139,8 @@ export default class Game {
                             sPlayer.x_dest, 
                             sPlayer.y_dest, 
                             sPlayer.distanceTraveled,
-                            sPlayer.energy
+                            sPlayer.energy,
+                            sPlayer.isCharging
                         ))
                     player_num++
                 } else {
@@ -141,7 +152,8 @@ export default class Game {
                         sPlayer.x_dest, 
                         sPlayer.y_dest,
                         sPlayer.distanceTraveled,
-                        sPlayer.energy
+                        sPlayer.energy,
+                        sPlayer.isCharging
                     )
                 } 
             }

@@ -36,7 +36,7 @@ class GameController {
         this.gameLoopTimer = setInterval(this.gameloop.bind(this), 1000/60)
         this.gl_startTime = new Date()
         this.sendUpdatesTimer = setInterval(this.sendUpdates.bind(this), 1000 / config.networkUpdateFactor)
-        this.handle_move_char()
+        this.handle_socket_events()
         this.gameOverCallback = gameOverCallback
     }
 
@@ -115,8 +115,7 @@ class GameController {
     // ************************
     // Receive request from clients
     // ************************
-
-    handle_move_char() {
+    handle_socket_events() {
         for (let property in this.players) {
             let player = this.players[property]
             let socket = this.io.sockets.sockets[player.id]
@@ -125,7 +124,19 @@ class GameController {
                     let direction = payload.direction
                     let steps = payload.steps
                     let player = this.players[socket.id]
-                    if (player) player.moveDest(this.map, direction, steps)
+                    if (player) {
+                        player.moveDest(this.map, direction, steps)
+                        player.isCharging = false
+                    }
+                })
+                socket.on('START_CHARGE', payload => {
+                    let player = this.players[socket.id]
+                    if (player) player.isCharging = true
+                })
+                socket.on('STOP_CHARGE', payload => {
+                    console.log('stopping')
+                    let player = this.players[socket.id]
+                    if (player) player.isCharging = false
                 })
             }
         }
@@ -155,7 +166,7 @@ class GameController {
             let player = this.players[property]
             let socket = this.io.sockets.sockets[player.id]
             if (socket) {
-                socket.removeAllListeners(['MOVE_CHAR'])
+                socket.removeAllListeners(['MOVE_CHAR', 'START_CHARGE', 'STOP_CHARGE'])
             }
         }
     }

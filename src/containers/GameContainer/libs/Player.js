@@ -7,7 +7,7 @@ const trail_size = 3
 const font_size = 17
 
 export default class Player {
-    constructor(stage, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy) {
+    constructor(stage, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy, isCharging) {
         this.stage = stage
         this.num = num
         this.x = x
@@ -21,8 +21,10 @@ export default class Player {
         this.y_dest = y_dest
         this.distanceTraveled = distanceTraveled
         this.energy = energy
+        this.isCharging = isCharging
 
         // For graphics
+        this.rings = []
         this.last_x_dest = x_dest
         this.last_y_dest = y_dest
         this.graphics = new Pixi.Graphics()
@@ -39,7 +41,7 @@ export default class Player {
         this.stage.addChild(this.name_graphics)
     }
 
-    update(x, y, hp, x_dest, y_dest, distanceTraveled, energy) {
+    update(x, y, hp, x_dest, y_dest, distanceTraveled, energy, isCharging) {
         this.x = x
         this.y = y
         this.hp = hp
@@ -47,20 +49,48 @@ export default class Player {
         this.y_dest = y_dest
         this.distanceTraveled = distanceTraveled
         this.energy = energy
+        this.isCharging = isCharging
     }
 
     render(blockWidth, blockHeight) {
         this.graphics.clear()
         
         let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
+            diameter = diameter/3
 
         if (this.x === this.x_dest && this.y === this.y_dest) {
             // Stationary
             if (this.hp > 0) {
+                // Charging
+                if (this.isCharging) {
+                    if (this.rings.length === 0) {
+                        this.rings.push(0)
+                    } else {
+                        for (let i = 0; i < this.rings.length; ++i) {
+                            this.rings[i] += 0.2
+                            if (this.rings[i] > diameter) {
+                                this.rings.splice(i, 1)
+                                i--
+                            } else if (this.rings[i] > diameter/2 && this.rings.length < 2) {
+                                this.rings.push(0)
+                            }
+                        }
+                    }
+                } else {
+                    this.rings = []
+                }
+
                 this.graphics.lineStyle(0)
                 this.graphics.beginFill(colors[this.num], 1)
-                this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter/3)
+                this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter)
                 this.graphics.endFill()
+                
+                for (let ring of this.rings) {
+                    this.graphics.lineStyle(0.7, 0xffffff)
+                    this.graphics.beginFill(0x000000, 0)
+                    this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, ring)
+                    this.graphics.endFill()
+                }
             }
             // fade the trail
             for (let i = 0; i < this.trail_graphics.length; ++i) {
