@@ -14,8 +14,6 @@ import {
     SET_GAME_OVER_STATE,
 } from '../../redux/actions'
 
-const RATIO = 19/10
-
 class GameContainer extends Component {
     constructor(props) {
         console.log('In-Game')
@@ -47,8 +45,7 @@ class GameContainer extends Component {
     updateGameCanvas = element => {
         this.gameCanvas = element
         if(this.gameCanvas && this.gameCanvas.children.length<=0) {
-            let gameDimension = this.calculateGameDimension()
-            this.game = new Game(gameDimension.gameWidth, gameDimension.gameHeight)
+            this.game = new Game(this.gameCanvas.offsetWidth, this.gameCanvas.offsetHeight)
             this.game.Initialize()
             this.game.InitalizeControlManager('gameCanvas')
             this.gameCanvas.appendChild(this.game.getApp().view)
@@ -57,24 +54,8 @@ class GameContainer extends Component {
 
     onResize = (width, height) => {
         if (this.gameCanvas) {
-            let gameDimension = this.calculateGameDimension()
-            this.game.resize(gameDimension.gameWidth, gameDimension.gameHeight)
+            this.game.resize(this.gameCanvas.offsetWidth, this.gameCanvas.offsetHeight)
         }
-    }
-
-    calculateGameDimension() {
-        let element = this.gameCanvas
-        let gameWidth = 0
-        let gameHeight = 0
-        // TODO: do better dimension calculation
-        if (element.offsetHeight < element.offsetWidth) {
-            gameWidth = element.offsetHeight * RATIO
-            gameHeight = element.offsetHeight
-        } else {
-            gameWidth = element.offsetWidth
-            gameHeight = element.offsetWidth / RATIO
-        }
-        return {gameWidth, gameHeight}
     }
 
     render() {
@@ -85,23 +66,6 @@ class GameContainer extends Component {
         return <div className="fullscreen">
             <ReactResizeDetector handleWidth handleHeight onResize={this.onResize} />
             <div id="game-wrapper" style={{display: 'flex', height: '100%', flexDirection: 'column'}}>
-                <div id="ui" style={{width: '100%'}}>
-                    <ButtonGroup style={{float: 'left'}}>
-                        <Button variant="outline-primary" onClick={this.onQuitGameRoom}>
-                            Quit
-                        </Button>
-                        {window.innerWidth > window.innerHeight && <Button variant="outline-primary" onClick={this.onFullScreenPress}>
-                            Full Screen
-                        </Button>}
-                    </ButtonGroup>
-                    {mPlayer && <ProgressBar style={{flex: 1, height: '100%'}}
-                        striped={mPlayer.hp > 0}
-                        animated={mPlayer.hp > 0}
-                        variant={mPlayer.hp > 0 ? 'info' : 'danger'}
-                        now={mPlayer.hp > 0 ? mPlayer.energy/mPlayer.max_energy * 100 : 100}
-                        label={mPlayer.hp > 0 ? `${mPlayer.energy}/${mPlayer.max_energy}` : 'DEAD'}
-                    />}
-                </div>
                 <div id='gameCanvas' ref={this.updateGameCanvas} 
                     style={{
                         position: 'relative', 
@@ -112,6 +76,22 @@ class GameContainer extends Component {
                         backgroundColor: '#f2fbff'
                     }}
                 />
+                <ButtonGroup style={{position: 'absolute', top: '5px', left: '5px'}}>
+                    <Button variant="dark" size="sm" onClick={this.onQuitGameRoom}>
+                        Quit
+                    </Button>
+                    {window.innerWidth > window.innerHeight && 
+                    <Button variant="dark" size="sm" onClick={this.onFullScreenPress}>
+                        FS
+                    </Button>}
+                </ButtonGroup>
+                {mPlayer && <ProgressBar style={{position: 'absolute', bottom: 0, width: '100%'}}
+                    striped={mPlayer.hp > 0}
+                    animated={mPlayer.hp > 0}
+                    variant={mPlayer.hp > 0 ? 'info' : 'danger'}
+                    now={mPlayer.hp > 0 ? mPlayer.energy/mPlayer.max_energy * 100 : 100}
+                    label={mPlayer.hp > 0 ? `${mPlayer.energy}/${mPlayer.max_energy}` : 'DEAD'}
+                />}
             </div>
             <Modal show={this.props.gameOverState ? true:false} onHide={this.onQuitGame}>
                 <Modal.Header closeButton>

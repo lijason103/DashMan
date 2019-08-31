@@ -1,87 +1,65 @@
 import * as Pixi from 'pixi.js';
 
 export default class Map {
-    constructor(stage, winWidth, winHeight) {
+    constructor(stage, screen) {
+        this.container = new Pixi.Container()
+        stage.addChild(this.container)
         this.structures = null
-        this.winWidth = winWidth // Device window width
-        this.winHeight = winHeight // Device window height
         this.stage = stage
-        this.horizontalLines = []
-        this.verticalLines = []
-        this.wallRectangles = []
+        this.linesGraphic = new Pixi.Graphics()
+        this.container.addChild(this.linesGraphic)
+        this.wallsGraphic = new Pixi.Graphics()
+        this.container.addChild(this.wallsGraphic)
     }
 
-    renderBackground() {
+    renderBackground(blockSize) {
         if (!this.structures) return
         // Clear
-        for (let line of this.horizontalLines) {
-            line.clear()
-        }
-        for (let line of this.verticalLines) {
-            line.clear()
-        }
-        for (let rectangle of this.wallRectangles) {
-            rectangle.clear()
-        }
-
+        this.linesGraphic.clear()
+        this.wallsGraphic.clear()
 
         let width = this.structures[0].length
         let height = this.structures.length
-        let blockHeight = this.getBlockHeight()
-        let blockWidth = this.getBlockWidth()
         
         // Horizontal lines
-        for (let i = 0; i < height; ++i) {
-            let line = new Pixi.Graphics()
-            line.lineStyle(1, 0xc1c8cc, 1)
-            line.moveTo(0, i * blockHeight)
-            line.lineTo(this.winWidth, i * blockHeight)
-            this.horizontalLines.push(line)
-            this.stage.addChild(line)
+        this.linesGraphic.lineStyle(1, 0xc1c8cc, 0.5)
+        for (let i = 0; i <= height; ++i) {
+            this.linesGraphic.moveTo(0, i * blockSize)
+            this.linesGraphic.lineTo(width * blockSize, i * blockSize)
+            this.linesGraphic.endFill()
         }
         // Vertical lines
-        for (let i = 0; i < width; ++i) {
-            let line = new Pixi.Graphics()
-            line.lineStyle(1, 0xc1c8cc, 1)
-            line.moveTo(i * blockWidth, 0)
-            line.lineTo(i * blockWidth, this.winHeight)
-            this.verticalLines.push(line)
-            this.stage.addChild(line)
+        for (let i = 0; i <= width; ++i) {
+            this.linesGraphic.moveTo(i * blockSize, 0)
+            this.linesGraphic.lineTo(i * blockSize, height * blockSize)
+            this.linesGraphic.endFill()
         }
 
         // Walls
-        let wall_blockWidth = blockWidth * 0.8
-        let wall_gap_width = blockWidth - wall_blockWidth
-        let wall_blockHeight = blockHeight * 0.8
-        let wall_gap_height = blockHeight - wall_blockHeight
+        let wall_size = blockSize * 0.8
+        let wall_gap = blockSize - wall_size
         for (let i = 0; i < height; ++i) {
             for (let j = 0; j < width; ++j) {
                 if (this.structures[i][j] !== 'W') continue
-                let rectangle = new Pixi.Graphics()
-                rectangle.zIndex = 0
-                rectangle.beginFill(0x9e9e9e)
-                rectangle.drawRoundedRect(j*blockWidth + wall_gap_width/2, i*blockHeight + wall_gap_height/2, wall_blockWidth, wall_blockHeight, 5)
-                rectangle.endFill()
-                this.wallRectangles.push(rectangle)
-                this.stage.addChild(rectangle)
+                let x = j*blockSize + wall_gap/2
+                let y = i*blockSize + wall_gap/2
+                this.wallsGraphic.beginFill(0x9e9e9e)
+                this.wallsGraphic.drawRoundedRect(x, y, wall_size, wall_size, 5)
+                this.wallsGraphic.endFill()
             }
         }
     }
 
-    render() {
-    }
-
     setStructures(structures) {
         this.structures = structures
-        this.renderBackground()
     }
 
-    getBlockWidth() {
-        return this.winWidth/this.structures[0].length
-    }
-
-    getBlockHeight() {
-        return this.winHeight/this.structures.length
+    getStructureSize() {
+        if (this.structures.length === 0) return null
+        return {
+            width: this.structures[0].length,
+            height: this.structures.length
+        }
     }
 
     isEmpty() {

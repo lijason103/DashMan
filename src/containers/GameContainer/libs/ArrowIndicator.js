@@ -1,6 +1,5 @@
 import * as Pixi from 'pixi.js';
 
-const size = 10
 export default class ArrowIndicator {
     constructor(stage) {
         this.length = 0
@@ -10,20 +9,21 @@ export default class ArrowIndicator {
         stage.addChild(this.graphics)
     }
 
-    render(x, y, blockWidth, blockHeight) {
-        let startX = x * blockWidth + blockWidth/2
-        let startY = y * blockHeight + blockHeight/2
+    render(x, y, blockSize) {
+        let size = blockSize * 0.2
+        let startX = x * blockSize + blockSize/2
+        let startY = y * blockSize + blockSize/2
         this.graphics.clear()
         if (this.direction) {
             this.graphics.beginFill(0x76FF03, 0.4);
             if (this.direction === 'up'){
-                this.graphics.drawRect(startX - size/2, startY - this.length + blockHeight/2, size, this.length - blockHeight/2)
+                this.graphics.drawRect(startX - size/2, startY - this.length + blockSize/2, size, this.length - blockSize/2)
             } else if (this.direction === 'down') {
-                this.graphics.drawRect(startX - size/2, startY, size, this.length - blockHeight/2)
+                this.graphics.drawRect(startX - size/2, startY, size, this.length - blockSize/2)
             } else if (this.direction === 'left') {
-                this.graphics.drawRect(startX - this.length + blockHeight/2, startY - size/2, this.length - blockHeight/2, size)
+                this.graphics.drawRect(startX - this.length + blockSize/2, startY - size/2, this.length - blockSize/2, size)
             } else if (this.direction === 'right') {
-                this.graphics.drawRect(startX, startY - size/2, this.length - blockHeight/2, size)
+                this.graphics.drawRect(startX, startY - size/2, this.length - blockSize/2, size)
             }
         }
     }

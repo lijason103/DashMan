@@ -134,7 +134,6 @@ class GameController {
                     if (player) player.isCharging = true
                 })
                 socket.on('STOP_CHARGE', payload => {
-                    console.log('stopping')
                     let player = this.players[socket.id]
                     if (player) player.isCharging = false
                 })

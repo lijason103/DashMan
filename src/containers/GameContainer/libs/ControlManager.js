@@ -34,6 +34,7 @@ export default class ControlManager {
             }
         })
         this.joystickManager.on('end', (evt, data) => {
+            if (this.onCancelledCallback) this.onCancelledCallback()
             this.joystick_angle = null
             this.joystick_force = 0
             this.isCancelled = false

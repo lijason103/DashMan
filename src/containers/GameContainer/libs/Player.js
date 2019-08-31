@@ -3,7 +3,6 @@ import { socket } from '../../../index'
 
 // blue, red, green, orange, purple, brown
 const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x795548]
-const trail_size = 3
 const font_size = 17
 
 export default class Player {
@@ -32,7 +31,6 @@ export default class Player {
         this.textStyle = new Pixi.TextStyle({
             fontFamily: 'Arial',
             fontSize: 16,
-            fontWeight: 'bold',
             fill: [socket.id === this.id ? 0x4CAF50 : 0xf44336]
         })
         this.name_graphics = new Pixi.Text(this.name, this.textStyle)
@@ -52,11 +50,10 @@ export default class Player {
         this.isCharging = isCharging
     }
 
-    render(blockWidth, blockHeight) {
+    render(blockSize) {
         this.graphics.clear()
         
-        let diameter = blockWidth < blockHeight ? blockWidth : blockHeight
-            diameter = diameter/3
+        let diameter = blockSize/3
 
         if (this.x === this.x_dest && this.y === this.y_dest) {
             // Stationary
@@ -67,7 +64,7 @@ export default class Player {
                         this.rings.push(0)
                     } else {
                         for (let i = 0; i < this.rings.length; ++i) {
-                            this.rings[i] += 0.2
+                            this.rings[i] += blockSize * 0.002
                             if (this.rings[i] > diameter) {
                                 this.rings.splice(i, 1)
                                 i--
@@ -82,13 +79,13 @@ export default class Player {
 
                 this.graphics.lineStyle(0)
                 this.graphics.beginFill(colors[this.num], 1)
-                this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, diameter)
+                this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, diameter)
                 this.graphics.endFill()
                 
                 for (let ring of this.rings) {
                     this.graphics.lineStyle(0.7, 0xffffff)
                     this.graphics.beginFill(0x000000, 0)
-                    this.graphics.drawCircle(this.x * blockWidth + blockWidth/2, this.y * blockHeight + blockHeight/2, ring)
+                    this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, ring)
                     this.graphics.endFill()
                 }
             }
@@ -107,6 +104,7 @@ export default class Player {
         } else { 
             // Moving
             let trail
+            let trail_size = blockSize * 0.05
             if (this.x_dest !== this.last_x_dest || this.y_dest !== this.last_y_dest || this.trail_graphics.length === 0) {
                 trail = new Pixi.Graphics()
                 this.trail_graphics.push(trail)
@@ -120,18 +118,20 @@ export default class Player {
             trail.lineStyle(1, colors[this.num], 0.5)
             trail.beginFill(0xffffff, 1)
             if (this.x !== this.x_dest) {
-                let width = this.distanceTraveled * blockWidth
+                let width = this.distanceTraveled * blockSize
+                let trail_y = this.y * blockSize + blockSize/2
                 if (this.x_dest > this.x) {
-                    trail.drawEllipse((this.x * blockWidth) + (blockWidth/2) - width/2, this.y * blockHeight + blockHeight/2, width/2, trail_size)
+                    trail.drawEllipse((this.x * blockSize) + (blockSize/2) - width/2, trail_y, width/2, trail_size)
                 } else {
-                    trail.drawEllipse((this.x * blockWidth) + (blockWidth/2) + width/2, this.y * blockHeight + blockHeight/2, width/2, trail_size)
+                    trail.drawEllipse((this.x * blockSize) + (blockSize/2) + width/2, trail_y, width/2, trail_size)
                 }
             } else if (this.y !== this.y_dest) {
-                let height = this.distanceTraveled * blockHeight
+                let height = this.distanceTraveled * blockSize
+                let trail_x = (this.x * blockSize) + (blockSize/2)
                 if (this.y_dest > this.y) {
-                    trail.drawEllipse((this.x * blockWidth) + (blockWidth/2), (this.y * blockHeight) + (blockHeight/2) - height/2, trail_size, height/2)
+                    trail.drawEllipse(trail_x, (this.y * blockSize) + (blockSize/2) - height/2, trail_size, height/2)
                 } else {
-                    trail.drawEllipse((this.x * blockWidth) + (blockWidth/2), (this.y * blockHeight) + (blockHeight/2) + height/2, trail_size, height/2)
+                    trail.drawEllipse(trail_x, (this.y * blockSize) + (blockSize/2) + height/2, trail_size, height/2)
                 }
             }
             trail.endFill()
@@ -141,9 +141,11 @@ export default class Player {
 
         if (this.hp > 0) {
             // Draw hp bar
-            let hp_width = blockWidth * 0.8
-            let hp_height = blockHeight * 0.1
+            let hp_width = blockSize * 0.9
+            let hp_height = blockSize * 0.1
             let hp_color, hp_color_background
+            let hp_x = this.x * blockSize + (blockSize - hp_width)/2
+            let hp_y = this.y * blockSize
             if (socket.id === this.id) {
                 hp_color = 0x4CAF50
                 hp_color_background = 0xDCEDC8
@@ -153,15 +155,15 @@ export default class Player {
             }
             this.graphics.lineStyle(0)
             this.graphics.beginFill(hp_color_background)
-            this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width, hp_height)
+            this.graphics.drawRect(hp_x, hp_y, hp_width, hp_height)
             this.graphics.endFill()
             this.graphics.beginFill(hp_color)
-            this.graphics.drawRect(this.x * blockWidth + (blockWidth - hp_width)/2, this.y * blockHeight + 3, hp_width*(this.hp/this.max_hp), hp_height)
+            this.graphics.drawRect(hp_x, hp_y, hp_width*(this.hp/this.max_hp), hp_height)
             this.graphics.endFill()
 
             // Draw name
-            this.name_graphics.x = this.x * blockWidth + (blockWidth - this.name_graphics.width)/2
-            this.name_graphics.y = this.y * blockHeight - this.name_graphics.height
+            this.name_graphics.x = this.x * blockSize + (blockSize - this.name_graphics.width)/2
+            this.name_graphics.y = this.y * blockSize - this.name_graphics.height
         } else {
             this.name_graphics.visible = false
         }

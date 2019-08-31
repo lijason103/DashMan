@@ -15,13 +15,13 @@ export default class Game {
             antialias: true,
             autoDensity: true,
             resolution: window.devicePixelRatio,
+            autoResize: true,
         })
         this.players = {}
+        this.blockSize = 0
 
         // Map
-        this.mapContainer = new Pixi.Container()
-        this.app.stage.addChild(this.mapContainer)
-        this.map = new Map(this.mapContainer, this.app.screen.width, this.app.screen.height)
+        this.map = new Map(this.app.stage)
 
         // Arrow Indicator
         this.arrowIndicatorContainer = new Pixi.Container()
@@ -44,14 +44,17 @@ export default class Game {
     InitalizeControlManager(id) {
         this.controlManager = new ControlManager(id)
         this.controlManager.setOnCancelledCallback(() => {
-            socket.emit('STOP_CHARGE', {})
+            let mPlayer = this.players[socket.id]
+            if (mPlayer && mPlayer.isCharging) {
+                socket.emit('STOP_CHARGE', {})
+            }
         })
         this.controlManager.setOnReachedThreshCallback(() => {
             socket.emit('START_CHARGE', {})
         })
         this.controlManager.setOnChangeDirectionCallback(() => {
-            socket.emit('STOP_CHARGE', {})
-            setTimeout(() => socket.emit('START_CHARGE', {}), 200)
+            // socket.emit('STOP_CHARGE', {})
+            // setTimeout(() => socket.emit('START_CHARGE', {}), 200)
         })
     }
 
@@ -61,17 +64,16 @@ export default class Game {
         let mPlayer = this.players[socket.id]
 
         // Render players
-        let blockWidth = this.map.getBlockWidth()
-        let blockHeight = this.map.getBlockHeight()
+        let blockSize = this.blockSize
         for (let id in this.players) {
             if (this.players.hasOwnProperty(id)) {
                 let player = this.players[id]
-                player.render(blockWidth, blockHeight)
+                player.render(blockSize)
             }
         }
         // Arrow
         if (mPlayer) {
-            this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY(), blockWidth, blockHeight)
+            this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY(), blockSize)
         }
     }
 
@@ -80,8 +82,7 @@ export default class Game {
         if (this.map.isEmpty()) return
         this.render()
         let mPlayer = this.players[socket.id]
-        let blockWidth = this.map.getBlockWidth()
-        let blockHeight = this.map.getBlockHeight()
+        let blockSize = this.blockSize
 
         // Update arrow indicator only when
         // player is still alive and is stationary
@@ -89,13 +90,13 @@ export default class Game {
             if (this.controlManager.getIsCancelled()) {
                 this.arrowIndicator.reset()
             } else if (this.controlManager.getIsUp()) {
-                this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockHeight, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
             } else if (this.controlManager.getIsDown()) {
-                this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockHeight, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
             } else if (this.controlManager.getIsRight()) {
-                this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockWidth, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
             } else if (this.controlManager.getIsLeft()) {
-                this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockWidth, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
             } else {
                 // Send move request to server
                 let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
@@ -119,6 +120,10 @@ export default class Game {
             // Create map if it hasn't been created yet
             if (this.map.isEmpty()) {
                 this.map.setStructures(state.map.structures)
+                this.blockSize = this.calculateBlockSize(this.map.getStructureSize())
+                this.app.stage.x += this.getHorizontalPadding()
+                this.app.stage.y += this.getVerticalPadding()
+                this.map.renderBackground(this.blockSize)
             }
             let player_num = 0
             for (let property in state.players) {
@@ -160,12 +165,42 @@ export default class Game {
         })
     }
 
+    // Helpers
+    calculateBlockSize(structureSize) {
+        let size
+        if (this.app.screen.width < this.app.screen.height) {
+            size = this.app.screen.width/structureSize.width
+        } else {
+            // TODO: Find a better way to calculate the block size in landscape mode
+            // This is a terrible way to solve it
+            // This is required because the ratio for iPad is messed...
+            size = this.app.screen.height/structureSize.height
+            while (size * structureSize.width > this.app.screen.width) {
+                size -= 1
+            }
+        }
+        return size
+    }
+
+    getVerticalPadding() {
+        let structureSize = this.map.getStructureSize()
+        if (!structureSize) return 0
+        return (this.app.screen.height - (this.blockSize * structureSize.height))/2
+    }
+
+    getHorizontalPadding() {
+        let structureSize = this.map.getStructureSize()
+        if (!structureSize) return 0        
+        return (this.app.screen.width - (this.blockSize * structureSize.width))/2
+    }
+
     resize(width, height) {
         this.app.renderer.resize(width, height)
-        this.app.stage.width = width
-        this.app.stage.height = height
         if (!this.map.isEmpty()) {
-            this.map.renderBackground()
+            this.blockSize = this.calculateBlockSize(this.map.getStructureSize())
+            this.app.stage.x = this.getHorizontalPadding()
+            this.app.stage.y = this.getVerticalPadding()
+            this.map.renderBackground(this.blockSize)
         }
         for (let property in this.players) {
             this.players[property].resize(this.app.renderer.resolution)
