@@ -31,10 +31,12 @@ class GameRoomLobby extends Component {
         return <div className="body">
             <h1>Game Room {this.props.gameRoom.id.slice(-5)}</h1>
             <ButtonGroup>
-                <Button variant="outline-primary" onClick={this.onBackPress}>
+                <Button variant="dark" onClick={this.onBackPress}>
                     Back to main lobby
                 </Button>
-                {this.props.gameRoom.host.id === socket.id && <Button variant="outline-primary" onClick={this.onStartPress}>
+                {this.props.gameRoom.host.id === socket.id && 
+                <Button variant="dark" onClick={this.onStartPress} 
+                        disabled={process.env.NODE_ENV === 'production' && (!this.props.gameRoom || this.props.gameRoom.clients.length <= 1)}>
                     Start Game
                 </Button>}
             </ButtonGroup>

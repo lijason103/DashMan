@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Button, ButtonGroup, Table, InputGroup, FormControl } from 'react-bootstrap'
+import { Button, ButtonGroup, Table, InputGroup, FormControl, Modal } from 'react-bootstrap'
 import './MainLobby.css'
 import { SET_PLAYER_NAME } from '../../redux/actions'
 import {
@@ -10,6 +10,13 @@ import {
 } from '../../socket'
 
 class MainLobby extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            isChangingName: false
+        }
+    }
+
     changePlayerName = name => {
         this.props.dispatch({ type:SET_PLAYER_NAME, playerName: name })
     }
@@ -22,14 +29,13 @@ class MainLobby extends Component {
     render() {
         return <div className="body">
             <h1>Lobby</h1>
-            <div style={{display: 'flex', flexDirection: 'row'}}>
+            <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <ButtonGroup>
-                    <Button variant="outline-primary" onClick={() => createGameRoom(this.props.playerName)}>Create room</Button>
-                    <Button variant="outline-primary" onClick={refreshRooms}>Refresh rooms</Button>
+                    <Button variant="dark" onClick={() => createGameRoom(this.props.playerName)}>Create room</Button>
+                    <Button variant="dark" onClick={refreshRooms}>Refresh rooms</Button>
+                    <Button variant="dark" onClick={() => this.setState({isChangingName: true})}>Change Name</Button>
                 </ButtonGroup>
-                <InputGroup>
-                    <FormControl value={this.props.playerName} onChange={event => this.changePlayerName(event.target.value)}/>
-                </InputGroup>
+                <b style={{marginLeft: '20px', fontSize: 20}}>{this.props.playerName}</b>
             </div>
             <Table striped bordered hover>
                 <thead>
@@ -55,6 +61,20 @@ class MainLobby extends Component {
                     })}
                 </tbody>
             </Table>
+            <Modal
+                show={this.state.isChangingName}
+                onHide={() => this.setState({isChangingName: false})}
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Changing Name</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <InputGroup>
+                        <FormControl value={this.props.playerName} onChange={event => this.changePlayerName(event.target.value)}/>
+                    </InputGroup>
+                </Modal.Body>
+            </Modal>
         </div>
     }
 }

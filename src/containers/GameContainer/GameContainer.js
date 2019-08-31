@@ -93,7 +93,7 @@ class GameContainer extends Component {
                     label={mPlayer.hp > 0 ? `${mPlayer.energy}/${mPlayer.max_energy}` : 'DEAD'}
                 />}
             </div>
-            <Modal show={this.props.gameOverState ? true:false} onHide={this.onQuitGame}>
+            <Modal show={this.props.gameOverState ? true:false} onHide={this.onQuitGame} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>And the winner is...</Modal.Title>
                 </Modal.Header>

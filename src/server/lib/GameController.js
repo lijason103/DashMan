@@ -69,7 +69,7 @@ class GameController {
             if (player.hp > 0) numOfAlive++
         }
         // Last man standing wins
-        if (numOfAlive === 1) {
+        if (numOfAlive === 1 && !this.sendGameOverTimer) {
             this.send_gameOver()
         }
     }
@@ -94,21 +94,23 @@ class GameController {
     }
 
     send_gameOver() {
-        let players = {}
-        let winner
-        for (let property in this.players) {
-            let player = this.players[property].getAll()
-            players[property] = player
-            if (player.hp > 0) {
-                winner = player.name
+        this.sendGameOverTimer = setTimeout(() => {
+            let players = {}
+            let winner
+            for (let property in this.players) {
+                let player = this.players[property].getAll()
+                players[property] = player
+                if (player.hp > 0) {
+                    winner = player.name
+                }
             }
-        }
-        let payload = {
-            players,
-            winner,
-        }
-        this.io.in(this.room_id).emit('GAME_OVER_STATE', payload)
-        this.gameOverCallback(this.room_id)
+            let payload = {
+                players,
+                winner,
+            }
+            this.io.in(this.room_id).emit('GAME_OVER_STATE', payload)
+            this.gameOverCallback(this.room_id)
+        }, 3000)
     }
 
 
@@ -159,6 +161,7 @@ class GameController {
         console.log('Removing all listeners')
         if (this.gameLoopTimer) clearInterval(this.gameLoopTimer)
         if (this.sendUpdatesTimer) clearInterval(this.sendUpdatesTimer)
+        if (this.sendGameOverTimer) clearTimeout(this.sendGameOverTimer)
         
         // Remove MOVE_CHAR listener
         for (let property in this.players) {
