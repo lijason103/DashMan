@@ -179,12 +179,16 @@ export default class Player {
         let outline = blockSize * 0.03
         let x = this.x * blockSize + blockSize/2
         let y = this.y * blockSize + blockSize/2
+        let color
         if (this.activeBuff.type === 'INVINCIBILITY_BUFF') {
-            this.graphics.lineStyle(outline, 0xFFC107, 0.5)
-            this.graphics.beginFill(0xFFC107, 0.3)
-            this.graphics.drawCircle(x, y, diameter)
-            this.graphics.endFill()
+            color = 0xFFC107
+        } else if (this.activeBuff.type === 'STRENGTH_BUFF') {
+            color = 0xf44336
         }
+        this.graphics.lineStyle(outline, color, 0.5)
+        this.graphics.beginFill(color, 0.3)
+        this.graphics.drawCircle(x, y, diameter)
+        this.graphics.endFill()
 
     }
 

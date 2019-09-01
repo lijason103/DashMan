@@ -91,13 +91,17 @@ class Player{
             let otherPlayer = players[property]
             // Ignore this player and ignore already damaged the player previously
             if (otherPlayer.id === this.id || this.damagedPlayers.hasOwnProperty(property) || otherPlayer.hp <= 0) continue
-            if (otherPlayer.activeBuff && otherPlayer.activeBuff.type === 'INVINCIBILITY_BUFF') return 
+            if (otherPlayer.activeBuff && otherPlayer.activeBuff.getType() === 'INVINCIBILITY_BUFF') return 
 
             if (Math.abs(this.x - otherPlayer.x) < 1 && Math.abs(this.y - otherPlayer.y) < 1) {
                 if (this.distanceTraveled > otherPlayer.distanceTraveled) {
                     // Only the one who traveled the 
-                    console.log(this.id, 'damaged', otherPlayer.id, 'by', this.distanceTraveled.toFixed(2))
-                    otherPlayer.hp -= this.distanceTraveled
+                    let dmg_multiplier = 1
+                    if (this.activeBuff && this.activeBuff.getType() === 'STRENGTH_BUFF') {
+                        dmg_multiplier = this.activeBuff.getDurationAll().multiplier
+                    }
+                    console.log(this.id, 'damaged', otherPlayer.id, 'by', (this.distanceTraveled * dmg_multiplier).toFixed(2))
+                    otherPlayer.hp -= (this.distanceTraveled * dmg_multiplier)
                     // players[property].hp -= this.distanceTraveled
                     this.damagedPlayers[otherPlayer.id] = true
                 }

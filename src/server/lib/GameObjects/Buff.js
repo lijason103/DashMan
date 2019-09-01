@@ -1,6 +1,6 @@
 const Helper = require('../Helper')
 const ONE_TIME_TYPES = ['ENERGY_BUFF', 'HEALTH_BUFF']
-const DURATION_TYPES = ['INVINCIBILITY_BUFF']
+const DURATION_TYPES = ['INVINCIBILITY_BUFF', 'STRENGTH_BUFF']
 const DURATION_TIME = 10 //s
 
 class Buff {
@@ -18,16 +18,20 @@ class Buff {
         } else {
             this.type = ONE_TIME_TYPES[Helper.generateRandom(0, ONE_TIME_TYPES.length-1)]
         }
+
+        // Multiplier for strength or other buffs
+        this.multiplier = null
     }
 
     activate(player) {
         if (this.isDurationBuff) {
             // Duration type
-            if (this.type === DURATION_TYPES[0]) {  // Invincibility
-                player.activeBuff = this
+            if (this.type === DURATION_TYPES[1]) {
+                this.multiplier = 1.5 // 1.5x the dmg
             }
             this.expiryDate = new Date()
             this.expiryDate.setSeconds(this.expiryDate.getSeconds() + DURATION_TIME)
+            player.activeBuff = this
         } else {
             // One-time type
             if (this.type === ONE_TIME_TYPES[0]) {      // Energy buff
@@ -55,7 +59,8 @@ class Buff {
         return {
             id: this.id,
             expiryDate: this.expiryDate,
-            type: this.type
+            type: this.type,
+            multiplier: this.multiplier,
         }
     }
 

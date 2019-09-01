@@ -81,7 +81,7 @@ export default class Game {
 
         // Render Arrow
         if (mPlayer) {
-            this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY(), blockSize)
+            this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY(), blockSize, mPlayer.getHp() <= 0)
         }
 
         // Render Buffs

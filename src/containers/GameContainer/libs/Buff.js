@@ -52,7 +52,7 @@ export default class Buff {
                 color = 0xFFC107
                 this.textGraphics.text = '盾'
             } else if (this.type === 'STRENGTH_BUFF') {
-                color = 0x4CAF50
+                color = 0xf44336
                 this.textGraphics.text = '力'
             }
             // let leftX = x - radius*0.4

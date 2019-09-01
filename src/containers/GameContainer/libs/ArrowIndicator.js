@@ -9,12 +9,12 @@ export default class ArrowIndicator {
         stage.addChild(this.graphics)
     }
 
-    render(x, y, blockSize) {
+    render(x, y, blockSize, isClearOnly) {
         let size = blockSize * 0.2
         let startX = x * blockSize + blockSize/2
         let startY = y * blockSize + blockSize/2
         this.graphics.clear()
-        if (this.direction) {
+        if (this.direction && !isClearOnly) {
             this.graphics.beginFill(0x76FF03, 0.4);
             if (this.direction === 'up'){
                 this.graphics.drawRect(startX - size/2, startY - this.length + blockSize/2, size, this.length - blockSize/2)
