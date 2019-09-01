@@ -2,6 +2,8 @@ const Player = require('./GameObjects/Player')
 const Map = require('./GameObjects/Map')
 const config = require('../config.json')
 
+const BUFF_SPAWN_RATE = 10000 // ms
+
 class GameController {
     constructor(io, room_id, clients) {
         this.io = io
@@ -38,6 +40,7 @@ class GameController {
         this.sendUpdatesTimer = setInterval(this.sendUpdates.bind(this), 1000 / config.networkUpdateFactor)
         this.handle_socket_events()
         this.gameOverCallback = gameOverCallback
+        this.buffSpawnTimer = setInterval(this.spawnBuffLoop.bind(this), BUFF_SPAWN_RATE)
     }
 
 
@@ -49,10 +52,11 @@ class GameController {
         // Update player position
         for (let property in this.players) {
             let player = this.players[property]
-            // let otherPlayers = { ...this.players }
-            // delete otherPlayers[property]
+
             player.move(elapsedMS)
             player.dealCollisionDamage(this.players)
+            let buff = this.map.getBuff(Math.floor(player.x), Math.floor(player.y))
+            if (buff) buff.activate(player)
 
             // Add energy
             player.regenerateEnergy(elapsedMS)
@@ -72,6 +76,10 @@ class GameController {
         if (numOfAlive === 1 && !this.sendGameOverTimer && process.env.NODE_ENV === 'production') {
             this.send_gameOver()
         }
+    }
+
+    spawnBuffLoop() {
+        this.map.generateBuff()
     }
 
     sendUpdates() {
@@ -162,6 +170,7 @@ class GameController {
         if (this.gameLoopTimer) clearInterval(this.gameLoopTimer)
         if (this.sendUpdatesTimer) clearInterval(this.sendUpdatesTimer)
         if (this.sendGameOverTimer) clearTimeout(this.sendGameOverTimer)
+        if (this.buffSpawnTimer) clearTimeout(this.buffSpawnTimer)
         
         // Remove MOVE_CHAR listener
         for (let property in this.players) {

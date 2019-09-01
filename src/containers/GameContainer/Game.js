@@ -5,6 +5,7 @@ import ControlManager from './libs/ControlManager'
 import Player from './libs/Player'
 import ArrowIndicator from './libs/ArrowIndicator'
 import Map from './libs/Map'
+import Buff from './libs/Buff'
 
 export default class Game {
     constructor(gameWidth, gameHeight) {
@@ -28,8 +29,14 @@ export default class Game {
         this.app.stage.addChild(this.arrowIndicatorContainer)
         this.arrowIndicator = new ArrowIndicator(this.arrowIndicatorContainer)
 
+        // Players
         this.playersContainer = new Pixi.Container()
         this.app.stage.addChild(this.playersContainer)
+
+        // Buffs
+        this.buffs = {}
+        this.buffsContainer = new Pixi.Container()
+        this.app.stage.addChild(this.buffsContainer)
 
         // Handle socket listeners
         this.handle_game_state()
@@ -71,9 +78,15 @@ export default class Game {
                 player.render(blockSize)
             }
         }
-        // Arrow
+
+        // Render Arrow
         if (mPlayer) {
             this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY(), blockSize)
+        }
+
+        // Render Buffs
+        for (let property in this.buffs) {
+            this.buffs[property].render(blockSize)
         }
     }
 
@@ -161,6 +174,21 @@ export default class Game {
                         sPlayer.isCharging
                     )
                 } 
+            }
+
+            // Add new buffs
+            for (let property in state.map.buffs) {
+                if (!this.buffs.hasOwnProperty(property)) {
+                    let buff = state.map.buffs[property]
+                    this.buffs[buff.id] = new Buff(this.buffsContainer, buff.id, buff.x, buff.y, buff.type)
+                }
+            }
+            // Remove old buffs
+            for (let property in this.buffs) {
+                if (!state.map.buffs.hasOwnProperty(property)) {
+                    this.buffs[property].remove()
+                    delete this.buffs[property]
+                }
             }
         })
     }

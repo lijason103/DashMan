@@ -1,5 +1,10 @@
+const Helper = require('../Helper')
+const Buff = require('./Buff')
+
 const GROD = 'G' // Ground
 const WALL = 'W'
+const BUFF = 'BUFF'
+const MAX_BUFFS = 6
 
 class Map {
     constructor() {
@@ -18,7 +23,31 @@ class Map {
             [WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL],
         ]
 
-        // Construct an 2D width x height array
+        this.buffs = {}
+    }
+
+    generateBuff() {
+        if (Object.keys(this.buffs).length >= MAX_BUFFS) return
+
+        // Randomly select an empty spot
+        let row, column
+        do {
+            row = Helper.generateRandom(0, this.getHeight() - 1)
+            column = Helper.generateRandom(0, this.getWidth() - 1)
+        } while (this.structures[row][column] !== GROD)
+        let newBuff = new Buff(column, row)
+        this.buffs[newBuff.getId()] = newBuff
+        this.structures[row][column] = `${BUFF}${newBuff.getId()}`
+    }
+
+    getBuff(x, y) {
+        if (this.structures[y][x].startsWith(BUFF)) {
+            let id = this.structures[y][x].substring(BUFF.length)
+            let buff = this.buffs[id]
+            delete this.buffs[id]
+            this.structures[y][x] = GROD
+            return buff
+        }
     }
 
     getValidSteps(startX, startY, direction, steps) {
@@ -46,8 +75,14 @@ class Map {
 
     // Return all attributes that should be allowed to send to the clients
     getAll() {
+        let buffs = {}
+        for (let property in this.buffs) {
+            buffs[property] = this.buffs[property].getAll()
+        }
+
         return {
-            structures: this.structures
+            structures: this.structures,
+            buffs
         }
     }
 }
