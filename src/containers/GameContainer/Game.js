@@ -146,6 +146,7 @@ export default class Game {
                     this.players[sPlayer.id] = (
                         new Player(
                             this.playersContainer,
+                            this.blockSize,
                             player_num,
                             sPlayer.id,
                             sPlayer.name,
@@ -171,19 +172,20 @@ export default class Game {
                         sPlayer.y_dest,
                         sPlayer.distanceTraveled,
                         sPlayer.energy,
-                        sPlayer.isCharging
+                        sPlayer.isCharging,
+                        sPlayer.activeBuff
                     )
                 } 
             }
 
-            // Add new buffs
+            // Add new buffs to the map
             for (let property in state.map.buffs) {
                 if (!this.buffs.hasOwnProperty(property)) {
                     let buff = state.map.buffs[property]
-                    this.buffs[buff.id] = new Buff(this.buffsContainer, buff.id, buff.x, buff.y, buff.type)
+                    this.buffs[buff.id] = new Buff(this.buffsContainer, this.blockSize, buff.id, buff.x, buff.y, buff.type)
                 }
             }
-            // Remove old buffs
+            // Remove old buffs from the map
             for (let property in this.buffs) {
                 if (!state.map.buffs.hasOwnProperty(property)) {
                     this.buffs[property].remove()
@@ -231,7 +233,10 @@ export default class Game {
             this.map.renderBackground(this.blockSize)
         }
         for (let property in this.players) {
-            this.players[property].resize(this.app.renderer.resolution)
+            this.players[property].resize(this.blockSize)
+        }
+        for (let property in this.buffs) {
+            this.buffs[property].resize(this.blockSize)
         }
     }
 

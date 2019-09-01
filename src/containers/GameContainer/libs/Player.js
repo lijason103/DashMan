@@ -3,10 +3,10 @@ import { socket } from '../../../index'
 
 // blue, red, green, orange, purple, brown
 const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x795548]
-const font_size = 17
+const FONT_SIZE_REL = 0.3
 
 export default class Player {
-    constructor(stage, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy, isCharging) {
+    constructor(stage, blockSize, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy, isCharging, activeBuff) {
         this.stage = stage
         this.num = num
         this.x = x
@@ -21,6 +21,7 @@ export default class Player {
         this.distanceTraveled = distanceTraveled
         this.energy = energy
         this.isCharging = isCharging
+        this.activeBuff = activeBuff
 
         // For graphics
         this.rings = []
@@ -30,7 +31,7 @@ export default class Player {
         this.trail_graphics = []
         this.textStyle = new Pixi.TextStyle({
             fontFamily: 'Arial',
-            fontSize: 16,
+            fontSize: blockSize * FONT_SIZE_REL,
             fill: [socket.id === this.id ? 0x4CAF50 : 0xf44336]
         })
         this.name_graphics = new Pixi.Text(this.name, this.textStyle)
@@ -39,7 +40,7 @@ export default class Player {
         this.stage.addChild(this.name_graphics)
     }
 
-    update(x, y, hp, x_dest, y_dest, distanceTraveled, energy, isCharging) {
+    update(x, y, hp, x_dest, y_dest, distanceTraveled, energy, isCharging, activeBuff) {
         this.x = x
         this.y = y
         this.hp = hp
@@ -48,6 +49,7 @@ export default class Player {
         this.distanceTraveled = distanceTraveled
         this.energy = energy
         this.isCharging = isCharging
+        this.activeBuff = activeBuff
     }
 
     render(blockSize) {
@@ -58,6 +60,7 @@ export default class Player {
         if (this.x === this.x_dest && this.y === this.y_dest) {
             // Stationary
             if (this.hp > 0) {
+                this.renderBuff(blockSize)
                 // Charging
                 if (this.isCharging) {
                     if (this.rings.length === 0) {
@@ -88,6 +91,7 @@ export default class Player {
                     this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, ring)
                     this.graphics.endFill()
                 }
+
             }
             // fade the trail
             for (let i = 0; i < this.trail_graphics.length; ++i) {
@@ -169,6 +173,21 @@ export default class Player {
         }
     }
 
+    renderBuff(blockSize) {
+        if (!this.activeBuff) return
+        let diameter = blockSize * 0.5
+        let outline = blockSize * 0.03
+        let x = this.x * blockSize + blockSize/2
+        let y = this.y * blockSize + blockSize/2
+        if (this.activeBuff.type === 'INVINCIBILITY_BUFF') {
+            this.graphics.lineStyle(outline, 0xFFC107, 0.5)
+            this.graphics.beginFill(0xFFC107, 0.3)
+            this.graphics.drawCircle(x, y, diameter)
+            this.graphics.endFill()
+        }
+
+    }
+
     getX() {
         return this.x
     }
@@ -189,7 +208,7 @@ export default class Player {
         return this.chargeRate
     }
 
-    resize(resolution) {
-        this.name_graphics.style.fontSize = (font_size / resolution) + "px"
+    resize(blockSize) {
+        this.name_graphics.style.fontSize = blockSize * FONT_SIZE_REL
     }
 }

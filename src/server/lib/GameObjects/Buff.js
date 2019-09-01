@@ -1,5 +1,7 @@
 const Helper = require('../Helper')
-const TYPES = ['ENERGY_BUFF', 'HEALTH_BUFF']
+const ONE_TIME_TYPES = ['ENERGY_BUFF', 'HEALTH_BUFF']
+const DURATION_TYPES = ['INVINCIBILITY_BUFF']
+const DURATION_TIME = 10 //s
 
 class Buff {
     constructor(x, y) {
@@ -9,15 +11,36 @@ class Buff {
         this.y = y
         
         // Generate a random buff
-        this.type = TYPES[Helper.generateRandom(0, TYPES.length-1)]
+        this.expiryDate = null
+        this.isDurationBuff = Helper.generateRandom(0, 1) === 1
+        if (this.isDurationBuff) {
+            this.type = DURATION_TYPES[Helper.generateRandom(0, DURATION_TYPES.length-1)]
+        } else {
+            this.type = ONE_TIME_TYPES[Helper.generateRandom(0, ONE_TIME_TYPES.length-1)]
+        }
     }
 
     activate(player) {
-        if (this.type === TYPES[0]) {
-            player.energy = player.max_energy
-        } else if (this.type === TYPES[1]) {
-            player.hp = player.max_hp
+        if (this.isDurationBuff) {
+            // Duration type
+            if (this.type === DURATION_TYPES[0]) {  // Invincibility
+                player.activeBuff = this
+            }
+            this.expiryDate = new Date()
+            this.expiryDate.setSeconds(this.expiryDate.getSeconds() + DURATION_TIME)
+        } else {
+            // One-time type
+            if (this.type === ONE_TIME_TYPES[0]) {      // Energy buff
+                player.energy = player.max_energy
+            } else if (this.type === ONE_TIME_TYPES[1]) {   // Health buff
+                player.hp = player.max_hp
+            }
         }
+
+    }
+
+    isExpired(currentTime) {
+        return currentTime > this.expiryDate
     }
 
     getId() {
@@ -26,6 +49,14 @@ class Buff {
 
     getType() {
         return this.type
+    }
+
+    getDurationAll() {
+        return {
+            id: this.id,
+            expiryDate: this.expiryDate,
+            type: this.type
+        }
     }
 
     getAll() {

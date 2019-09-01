@@ -55,6 +55,7 @@ class GameController {
 
             player.move(elapsedMS)
             player.dealCollisionDamage(this.players)
+            player.updateBuff(endTime)
             let buff = this.map.getBuff(Math.floor(player.x), Math.floor(player.y))
             if (buff) buff.activate(player)
 

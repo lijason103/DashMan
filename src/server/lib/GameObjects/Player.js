@@ -18,6 +18,14 @@ class Player{
         this.damagedPlayers = {} // A list of players that's been damaged by current player during the current movement
         this.distanceTraveled = 0 // The distance between original location and current location
         this.isCharging = false
+
+        this.activeBuff = null
+    }
+
+    updateBuff(currentTime) {
+        if (this.activeBuff && this.activeBuff.isExpired(currentTime)) {
+            this.activeBuff = null
+        }
     }
 
     regenerateEnergy(elapsedMS) {
@@ -83,6 +91,7 @@ class Player{
             let otherPlayer = players[property]
             // Ignore this player and ignore already damaged the player previously
             if (otherPlayer.id === this.id || this.damagedPlayers.hasOwnProperty(property) || otherPlayer.hp <= 0) continue
+            if (otherPlayer.activeBuff && otherPlayer.activeBuff.type === 'INVINCIBILITY_BUFF') return 
 
             if (Math.abs(this.x - otherPlayer.x) < 1 && Math.abs(this.y - otherPlayer.y) < 1) {
                 if (this.distanceTraveled > otherPlayer.distanceTraveled) {
@@ -138,6 +147,7 @@ class Player{
             max_energy: this.max_energy,
             distanceTraveled: this.distanceTraveled,
             isCharging: this.isCharging,
+            activeBuff: this.activeBuff ? this.activeBuff.getDurationAll() : null
         }
     }
 }
