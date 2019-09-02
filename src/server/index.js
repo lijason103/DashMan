@@ -25,6 +25,7 @@ io.on('connection', socket => {
     gameRoomController.handle_join_room()
     gameRoomController.handle_leave_room()
     gameRoomController.handle_start_game()
+    gameRoomController.handle_ready_game()
     gameRoomController.handle_disconnect()
 
     socket.on('disconnect', () => {

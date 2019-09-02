@@ -7,6 +7,7 @@ import { Button, ButtonGroup, Table } from 'react-bootstrap'
 import {
     leaveRoom,
     startGame,
+    readyGame,
 } from '../../socket'
 import {
     SET_GAME_ROOM,
@@ -28,6 +29,16 @@ class GameRoomLobby extends Component {
     }
 
     renderGameRoom() {
+        let isReady
+        let isEveryoneReady = true
+        for (let client of this.props.gameRoom.clients) {
+            if (client.id === socket.id) {
+                isReady = client.isReady
+            }
+            if (client.id !== this.props.gameRoom.host.id && !client.isReady) {
+                isEveryoneReady = false
+            }
+        }
         return <div className="body">
             <h1>Game Room {this.props.gameRoom.id.slice(-5)}</h1>
             <ButtonGroup>
@@ -36,26 +47,39 @@ class GameRoomLobby extends Component {
                 </Button>
                 {this.props.gameRoom.host.id === socket.id && 
                 <Button variant="dark" onClick={this.onStartPress} 
-                        disabled={process.env.NODE_ENV === 'production' && (!this.props.gameRoom || this.props.gameRoom.clients.length <= 1)}>
+                        disabled={process.env.NODE_ENV === 'production' && (!this.props.gameRoom || this.props.gameRoom.clients.length <= 1 || !isEveryoneReady)}>               
                     Start Game
+                </Button>}
+                {this.props.gameRoom.host.id !== socket.id && 
+                <Button variant="dark" onClick={() => readyGame(!isReady)} >
+                    {isReady ? 'Cancel' : 'Ready'}
                 </Button>}
             </ButtonGroup>
 
             <Table striped bordered hover>
                 <thead>
-                    <tr>
+                    <tr >
                         <th>Name</th>
-                        <th>#</th>
-                        <th></th>
+                        {/* <th>#</th> */}
+                        <th>. . . . . . . . . . .</th>
                     </tr>
                 </thead>
                 <tbody>
                     {this.props.gameRoom && this.props.gameRoom.clients.map((client, index) => {
+                        let isHost = this.props.gameRoom.host.id === client.id
                         return <tr key={index}>
                             <td>{socket.id === client.id ? <b>{client.name}</b> : client.name}</td>
-                            <td>{socket.id === client.id ? <b>{client.id}</b> : client.id}</td>
+                            {/* <td>{socket.id === client.id ? <b>{client.id}</b> : client.id}</td> */}
                             <td>
-                                <b style={{color: 'gold'}}>{this.props.gameRoom.host.id === client.id ? 'HOST' : ''}</b>
+                                {isHost && 
+                                    <b style={{color: '#FF9800'}}>HOST</b>
+                                }
+                                {!isHost && client.isReady && 
+                                    <b style={{color: '#4CAF50'}}>Ready</b>
+                                }
+                                {!isHost && !client.isReady &&
+                                    <b style={{color: '#BDBDBD'}}>Not Ready</b>
+                                }
                             </td>
                         </tr>
                     })}

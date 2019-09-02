@@ -26,6 +26,7 @@ class GameRoomController {
             clients.push({
                 id: this.socket.id,
                 name: this.purifyName(name),
+                isReady: false,
             })
             GameRoomController.game_rooms[room_id] = {
                 id: room_id,
@@ -68,7 +69,8 @@ class GameRoomController {
                 let room = GameRoomController.game_rooms[room_id]
                 room.clients = [...room.clients, {
                     id: this.socket.id,
-                    name: this.purifyName(name)
+                    name: this.purifyName(name),
+                    isReady: false,
                 }]
                 this.io.in(room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
                 this.current_room_id = room_id
@@ -93,21 +95,46 @@ class GameRoomController {
         })
     }
 
+    handle_ready_game() {
+        this.socket.on('READY_GAME', isReady => {
+            if (this.current_room_id == null || !GameRoomController.game_rooms.hasOwnProperty(this.current_room_id)) return
+            if (this.socket.id === GameRoomController.game_rooms[this.current_room_id].host.id) return
+            let room = GameRoomController.game_rooms[this.current_room_id]
+            for (let i = 0; i < room.clients.length; ++i) {
+                if (room.clients[i].id === this.socket.id) {
+                    room.clients[i].isReady = isReady
+                    break
+                }
+            }
+            this.io.in(this.current_room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
+        })
+    }
+
     handle_start_game() {
         this.socket.on('START_GAME', () => {
             // Check if the game room actually exist
             if (this.current_room_id == null || !GameRoomController.game_rooms.hasOwnProperty(this.current_room_id)) return
+            // Check if there is already a game running
+            if (GameRoomController.game_rooms[this.current_room_id].gameController) return
+            let room = GameRoomController.game_rooms[this.current_room_id]
             // Only host can start
-            if (this.socket.id !== GameRoomController.game_rooms[this.current_room_id].host.id) return
+            if (this.socket.id !== room.host.id) return
+            // Only when everyone is ready
+            for (let i = 0; i < room.clients.length; ++i) {
+                if (room.clients[i].id !== room.host.id && !room.clients[i].isReady) {
+                    return
+                }
+            }
 
             this.updateGameRoom(this.current_room_id, STATES.INGAME)
-            let room = GameRoomController.game_rooms[this.current_room_id]
+            room = GameRoomController.game_rooms[this.current_room_id]
             this.io.in(this.current_room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
 
             // Create a game controller to handle the game for this particular room
             let clients = GameRoomController.game_rooms[this.current_room_id].clients
             GameRoomController.game_rooms[this.current_room_id].gameController = new GameController(this.io, this.current_room_id, clients)
             GameRoomController.game_rooms[this.current_room_id].gameController.Initialize(this.onGameOver)
+
         })
     }
 

@@ -47,4 +47,6 @@ export const leaveRoom = () => socket.emit('LEAVE_ROOM')
 
 export const startGame = () => socket.emit('START_GAME')
 
+export const readyGame = isReady => socket.emit('READY_GAME', isReady)
+
 export default configureSocket;
