@@ -23,6 +23,7 @@ export default class Buff {
         let y = this.y * blockSize + blockSize/2
         let radius = (blockSize * 0.5)/2
         let outline = blockSize * 0.03
+        let color = 0x000000
         if (this.type === 'ENERGY_BUFF' || this.type === 'HEALTH_BUFF') {
             let horizontalHeight = radius * 0.15
             let horizontalWidth = radius * 0.9
@@ -31,7 +32,6 @@ export default class Buff {
 
             let verticalX = x - horizontalHeight/2
             let verticalY = y - horizontalWidth/2
-            let color
             if (this.type === 'ENERGY_BUFF') {
                 color = 0x2196F3
             } else if (this.type === 'HEALTH_BUFF') {
@@ -46,27 +46,19 @@ export default class Buff {
             this.graphics.drawCircle(x, y, radius)
             this.graphics.endFill()
 
-        } else if (this.type === 'INVINCIBILITY_BUFF' || this.type === 'STRENGTH_BUFF') {
-            let color = 0xFFC107
+        } 
+
+        if (this.type === 'INVINCIBILITY_BUFF' || this.type === 'STRENGTH_BUFF' || this.type === 'INVISIBILITY_BUFF') {
             if (this.type === 'INVINCIBILITY_BUFF') {
                 color = 0xFFC107
                 this.textGraphics.text = '盾'
             } else if (this.type === 'STRENGTH_BUFF') {
                 color = 0xf44336
                 this.textGraphics.text = '力'
+            } else if (this.type === 'INVISIBILITY_BUFF') {
+                color = 0x607D8B
+                this.textGraphics.text = '忍'
             }
-            // let leftX = x - radius*0.4
-            // let rightX = x + radius*0.4
-            // let topY = y - radius*0.4
-            // let midY = y + radius*0.3
-            // let botY = y + radius*0.6
-            // this.graphics.beginFill(color, 1)
-            // this.graphics.moveTo(leftX, topY) // topleft
-            // this.graphics.lineTo(rightX, topY) // topright
-            // this.graphics.lineTo(rightX, midY) // midright
-            // this.graphics.lineTo(x, botY) // botmid
-            // this.graphics.lineTo(leftX, midY) // midleft
-            // this.graphics.endFill()
             this.textGraphics.x = x - this.textGraphics.width/2
             this.textGraphics.y = y - this.textGraphics.height/2
             this.textGraphics.visible = true

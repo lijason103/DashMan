@@ -56,42 +56,44 @@ export default class Player {
         this.graphics.clear()
         
         let diameter = blockSize/3
+        let isInvisible = this.activeBuff && this.activeBuff.type === 'INVISIBILITY_BUFF' && this.id !== socket.id
 
         if (this.x === this.x_dest && this.y === this.y_dest) {
             // Stationary
             if (this.hp > 0) {
-                this.renderBuff(blockSize)
-                // Charging
-                if (this.isCharging) {
-                    if (this.rings.length === 0) {
-                        this.rings.push(0)
-                    } else {
-                        for (let i = 0; i < this.rings.length; ++i) {
-                            this.rings[i] += blockSize * 0.005
-                            if (this.rings[i] > diameter) {
-                                this.rings.splice(i, 1)
-                                i--
-                            } else if (this.rings[i] > diameter/2 && this.rings.length < 2) {
-                                this.rings.push(0)
+                if (!isInvisible) {
+                    this.renderBuff(blockSize)
+                    // Charging
+                    if (this.isCharging) {
+                        if (this.rings.length === 0) {
+                            this.rings.push(0)
+                        } else {
+                            for (let i = 0; i < this.rings.length; ++i) {
+                                this.rings[i] += blockSize * 0.005
+                                if (this.rings[i] > diameter) {
+                                    this.rings.splice(i, 1)
+                                    i--
+                                } else if (this.rings[i] > diameter/2 && this.rings.length < 2) {
+                                    this.rings.push(0)
+                                }
                             }
                         }
+                    } else {
+                        this.rings = []
                     }
-                } else {
-                    this.rings = []
-                }
-
-                this.graphics.lineStyle(0)
-                this.graphics.beginFill(colors[this.num], 1)
-                this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, diameter)
-                this.graphics.endFill()
-                
-                for (let ring of this.rings) {
-                    this.graphics.lineStyle(0.7, 0xffffff)
-                    this.graphics.beginFill(0x000000, 0)
-                    this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, ring)
+    
+                    this.graphics.lineStyle(0)
+                    this.graphics.beginFill(colors[this.num], 1)
+                    this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, diameter)
                     this.graphics.endFill()
+                    
+                    for (let ring of this.rings) {
+                        this.graphics.lineStyle(0.7, 0xffffff)
+                        this.graphics.beginFill(0x000000, 0)
+                        this.graphics.drawCircle(this.x * blockSize + blockSize/2, this.y * blockSize + blockSize/2, ring)
+                        this.graphics.endFill()
+                    }
                 }
-
             }
             // fade the trail
             for (let i = 0; i < this.trail_graphics.length; ++i) {
@@ -143,7 +145,7 @@ export default class Player {
 
 
 
-        if (this.hp > 0) {
+        if (this.hp > 0 && !isInvisible) {
             // Draw hp bar
             let hp_width = blockSize * 0.9
             let hp_height = blockSize * 0.1
@@ -168,6 +170,7 @@ export default class Player {
             // Draw name
             this.name_graphics.x = this.x * blockSize + (blockSize - this.name_graphics.width)/2
             this.name_graphics.y = this.y * blockSize - this.name_graphics.height
+            this.name_graphics.visible = true
         } else {
             this.name_graphics.visible = false
         }
@@ -184,6 +187,8 @@ export default class Player {
             color = 0xFFC107
         } else if (this.activeBuff.type === 'STRENGTH_BUFF') {
             color = 0xf44336
+        } else if (this.activeBuff.type === 'INVISIBILITY_BUFF') {
+            color = 0x607D8B
         }
         this.graphics.lineStyle(outline, color, 0.5)
         this.graphics.beginFill(color, 0.3)

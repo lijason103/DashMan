@@ -13,7 +13,7 @@ class Player{
         this.chargeRate = 7 // block per second
         this.x_dest = this.x // final destination that it's going to
         this.y_dest = this.y 
-        this.energyRate = 2 // amount of energy regenerate per second
+        this.energyRate = 1.5 // amount of energy regenerate per second
 
         this.damagedPlayers = {} // A list of players that's been damaged by current player during the current movement
         this.distanceTraveled = 0 // The distance between original location and current location
