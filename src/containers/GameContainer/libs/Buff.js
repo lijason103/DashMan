@@ -19,23 +19,26 @@ export default class Buff {
 
     render(blockSize) {
         this.graphics.clear()
-        let x = this.x * blockSize + blockSize/2
-        let y = this.y * blockSize + blockSize/2
-        let radius = (blockSize * 0.5)/2
+
         let outline = blockSize * 0.03
         let color = 0x000000
         if (this.type === 'ENERGY_BUFF' || this.type === 'HEALTH_BUFF') {
-            let horizontalHeight = radius * 0.15
-            let horizontalWidth = radius * 0.9
-            let horizontalX = x - horizontalWidth/2
-            let horizontalY = y - horizontalHeight/2
+            let width = blockSize * 0.7
+            let height = blockSize * 0.4
+            let x = this.x * blockSize + blockSize/2 - width/2
+            let y = this.y * blockSize + blockSize/2 - height/2
 
-            let verticalX = x - horizontalHeight/2
-            let verticalY = y - horizontalWidth/2
+            let horizontalHeight = height * 0.15
+            let horizontalWidth = height * 0.7
+            let horizontalX = x + (width - horizontalWidth)/2
+            let horizontalY = y + (height - horizontalHeight)/2
+
+            let verticalX = x + (width - horizontalHeight)/2
+            let verticalY = y + (height - horizontalWidth)/2
             if (this.type === 'ENERGY_BUFF') {
                 color = 0x2196F3
             } else if (this.type === 'HEALTH_BUFF') {
-                color = 0x4CAF50
+                color = 0xf44336
             }
             this.graphics.beginFill(color, 1)
             this.graphics.drawRect(horizontalX, horizontalY, horizontalWidth, horizontalHeight)
@@ -43,12 +46,13 @@ export default class Buff {
             this.graphics.endFill()
             this.graphics.lineStyle(outline, color, 0.5)
             this.graphics.beginFill(color, 0.3)
-            this.graphics.drawCircle(x, y, radius)
+            this.graphics.drawRoundedRect(x, y, width, height, blockSize*0.1)
             this.graphics.endFill()
 
-        } 
-
-        if (this.type === 'INVINCIBILITY_BUFF' || this.type === 'STRENGTH_BUFF' || this.type === 'INVISIBILITY_BUFF') {
+        } else {
+            let x = this.x * blockSize + blockSize/2
+            let y = this.y * blockSize + blockSize/2
+            let radius = (blockSize * 0.5)/2
             if (this.type === 'INVINCIBILITY_BUFF') {
                 color = 0xFFC107
                 this.textGraphics.text = '盾'
@@ -58,6 +62,9 @@ export default class Buff {
             } else if (this.type === 'INVISIBILITY_BUFF') {
                 color = 0x607D8B
                 this.textGraphics.text = '忍'
+            } else if (this.type === 'SPEED_BUFF') {
+                color = 0x4CAF50
+                this.textGraphics.text = '速'
             }
             this.textGraphics.x = x - this.textGraphics.width/2
             this.textGraphics.y = y - this.textGraphics.height/2

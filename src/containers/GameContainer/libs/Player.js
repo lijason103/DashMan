@@ -40,10 +40,11 @@ export default class Player {
         this.stage.addChild(this.name_graphics)
     }
 
-    update(x, y, hp, x_dest, y_dest, distanceTraveled, energy, isCharging, activeBuff) {
+    update(x, y, hp, chargeRate, x_dest, y_dest, distanceTraveled, energy, isCharging, activeBuff) {
         this.x = x
         this.y = y
         this.hp = hp
+        this.chargeRate = chargeRate
         this.x_dest = x_dest
         this.y_dest = y_dest
         this.distanceTraveled = distanceTraveled
@@ -189,6 +190,8 @@ export default class Player {
             color = 0xf44336
         } else if (this.activeBuff.type === 'INVISIBILITY_BUFF') {
             color = 0x607D8B
+        } else if (this.activeBuff.type === 'SPEED_BUFF') {
+            color = 0x4CAF50
         }
         this.graphics.lineStyle(outline, color, 0.5)
         this.graphics.beginFill(color, 0.3)

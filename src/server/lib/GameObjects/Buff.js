@@ -1,6 +1,6 @@
 const Helper = require('../Helper')
 const ONE_TIME_TYPES = ['ENERGY_BUFF', 'HEALTH_BUFF']
-const DURATION_TYPES = ['INVINCIBILITY_BUFF', 'STRENGTH_BUFF', 'INVISIBILITY_BUFF']
+const DURATION_TYPES = ['INVINCIBILITY_BUFF', 'STRENGTH_BUFF', 'INVISIBILITY_BUFF', 'SPEED_BUFF']
 const DURATION_TIME = 5 //s
 
 class Buff {
@@ -20,15 +20,21 @@ class Buff {
             this.type = ONE_TIME_TYPES[Helper.generateRandom(0, ONE_TIME_TYPES.length-1)]
         }
 
-        // Multiplier for strength or other buffs
-        this.multiplier = null
+        // For strength or other buffs
+        this.multiplier = 1
     }
 
     activate(player) {
         if (this.isDurationBuff) {
             // Duration type
             if (this.type === DURATION_TYPES[1]) {
-                this.multiplier = 9999 // 1.5x the dmg
+                // Increase strength (1 hit KO)
+                this.multiplier = 9999
+                player.dmg_multiplier *= this.multiplier
+            } else if (this.type === DURATION_TYPES[3]) {
+                // Increase charge rate
+                this.multiplier = 1.5
+                player.chargeRate *= this.multiplier
             }
             this.expiryDate = new Date()
             this.expiryDate.setSeconds(this.expiryDate.getSeconds() + DURATION_TIME)
@@ -42,6 +48,14 @@ class Buff {
             }
         }
 
+    }
+
+    deactivate(player) {
+        if (this.type === DURATION_TYPES[1]) {
+            player.dmg_multiplier /= this.multiplier
+        } else if (this.type === DURATION_TYPES[3]) {
+            player.chargeRate /= this.multiplier
+        }
     }
 
     isExpired(currentTime) {

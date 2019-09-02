@@ -168,12 +168,13 @@ export default class Game {
                         sPlayer.x, 
                         sPlayer.y, 
                         sPlayer.hp, 
+                        sPlayer.chargeRate,
                         sPlayer.x_dest, 
                         sPlayer.y_dest,
                         sPlayer.distanceTraveled,
                         sPlayer.energy,
                         sPlayer.isCharging,
-                        sPlayer.activeBuff
+                        sPlayer.activeBuff,
                     )
                 } 
             }
