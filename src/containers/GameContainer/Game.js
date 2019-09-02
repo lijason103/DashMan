@@ -204,7 +204,7 @@ export default class Game {
                 }
             }
             // Time
-            this.timeIndicator.setStartTime(state.startTime)
+            this.timeIndicator.setGameTime(state.gameTime)
         })
     }
 

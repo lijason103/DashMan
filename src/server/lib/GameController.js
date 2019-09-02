@@ -34,6 +34,7 @@ class GameController {
         }
 
         this.startTime = null
+        this.currentGameTime = null
     }
 
     Initialize(gameOverCallback) {
@@ -51,6 +52,7 @@ class GameController {
         let endTime = new Date()
         let elapsedMS = (endTime - this.gl_startTime)/1000
         this.gl_startTime = endTime
+        this.currentGameTime = endTime.getTime() - this.startTime
 
         // Update player position
         for (let property in this.players) {
@@ -101,7 +103,7 @@ class GameController {
         let payload = {
             map: this.map.getAll(),
             players,
-            startTime: this.startTime
+            gameTime: this.currentGameTime
         }
         this.io.in(this.room_id).emit('IN_GAME_STATE', payload)
     }
