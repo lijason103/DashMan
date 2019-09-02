@@ -6,6 +6,7 @@ import Player from './libs/Player'
 import ArrowIndicator from './libs/ArrowIndicator'
 import Map from './libs/Map'
 import Buff from './libs/Buff'
+import TimeIndicator from './libs/TimeIndicator'
 
 export default class Game {
     constructor(gameWidth, gameHeight) {
@@ -37,6 +38,11 @@ export default class Game {
         this.buffs = {}
         this.buffsContainer = new Pixi.Container()
         this.app.stage.addChild(this.buffsContainer)
+
+        // Time
+        this.timeIndicatorContainer = new Pixi.Container()
+        this.app.stage.addChild(this.timeIndicatorContainer)
+        this.timeIndicator = new TimeIndicator(this.timeIndicatorContainer)
 
         // Handle socket listeners
         this.handle_game_state()
@@ -88,6 +94,9 @@ export default class Game {
         for (let property in this.buffs) {
             this.buffs[property].render(blockSize)
         }
+
+        // Render timer
+        this.timeIndicator.render(blockSize)
     }
 
     gameLoop(deltaMS) {
@@ -137,6 +146,7 @@ export default class Game {
                 this.app.stage.x += this.getHorizontalPadding()
                 this.app.stage.y += this.getVerticalPadding()
                 this.map.renderBackground(this.blockSize)
+                this.timeIndicator.resize(this.blockSize, this.map.getStructureSize().width * this.blockSize)
             }
             let player_num = 0
             for (let property in state.players) {
@@ -193,6 +203,8 @@ export default class Game {
                     delete this.buffs[property]
                 }
             }
+            // Time
+            this.timeIndicator.setStartTime(state.startTime)
         })
     }
 
@@ -239,6 +251,7 @@ export default class Game {
         for (let property in this.buffs) {
             this.buffs[property].resize(this.blockSize)
         }
+        this.timeIndicator.resize(this.blockSize, this.map.getStructureSize().width * this.blockSize)
     }
 
     getApp() {

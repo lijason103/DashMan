@@ -32,6 +32,8 @@ class GameController {
             this.players[id] = new Player(id, name, x, y)
             p_i++
         }
+
+        this.startTime = null
     }
 
     Initialize(gameOverCallback) {
@@ -41,6 +43,7 @@ class GameController {
         this.handle_socket_events()
         this.gameOverCallback = gameOverCallback
         this.buffSpawnTimer = setInterval(this.spawnBuffLoop.bind(this), BUFF_SPAWN_RATE)
+        this.startTime = new Date().getTime()
     }
 
 
@@ -98,6 +101,7 @@ class GameController {
         let payload = {
             map: this.map.getAll(),
             players,
+            startTime: this.startTime
         }
         this.io.in(this.room_id).emit('IN_GAME_STATE', payload)
     }
