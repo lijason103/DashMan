@@ -2,7 +2,7 @@ const Player = require('./GameObjects/Player')
 const Map = require('./GameObjects/Map')
 const config = require('../config.json')
 
-const BUFF_SPAWN_RATE = 10000 // ms
+const BUFF_SPAWN_RATE = 8000 // ms
 
 class GameController {
     constructor(io, room_id, clients) {

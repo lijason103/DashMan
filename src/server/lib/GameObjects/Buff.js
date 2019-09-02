@@ -1,7 +1,7 @@
 const Helper = require('../Helper')
-const ONE_TIME_TYPES = ['ENERGY_BUFF', 'HEALTH_BUFF']
+const ONE_TIME_TYPES = ['ENERGY_BUFF', 'HEALTH_BUFF', 'HEALTH_BUFF', 'HEALTH_BUFF']
 const DURATION_TYPES = ['INVINCIBILITY_BUFF', 'STRENGTH_BUFF']
-const DURATION_TIME = 10 //s
+const DURATION_TIME = 5 //s
 
 class Buff {
     constructor(x, y) {
@@ -12,7 +12,8 @@ class Buff {
         
         // Generate a random buff
         this.expiryDate = null
-        this.isDurationBuff = Helper.generateRandom(0, 1) === 1
+        let rand = Helper.generateRandom(1, 5)
+        this.isDurationBuff = rand === 1
         if (this.isDurationBuff) {
             this.type = DURATION_TYPES[Helper.generateRandom(0, DURATION_TYPES.length-1)]
         } else {
@@ -27,7 +28,7 @@ class Buff {
         if (this.isDurationBuff) {
             // Duration type
             if (this.type === DURATION_TYPES[1]) {
-                this.multiplier = 1.5 // 1.5x the dmg
+                this.multiplier = 9999 // 1.5x the dmg
             }
             this.expiryDate = new Date()
             this.expiryDate.setSeconds(this.expiryDate.getSeconds() + DURATION_TIME)
