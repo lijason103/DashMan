@@ -132,6 +132,9 @@ class GameRoomController {
 
             // Create a game controller to handle the game for this particular room
             let clients = GameRoomController.game_rooms[this.current_room_id].clients
+            for (let client of clients) {
+                client.isReady = false
+            }
             GameRoomController.game_rooms[this.current_room_id].gameController = new GameController(this.io, this.current_room_id, clients)
             GameRoomController.game_rooms[this.current_room_id].gameController.Initialize(this.onGameOver)
 
