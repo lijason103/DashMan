@@ -6,13 +6,15 @@ import {
 	SET_PLAYER_NAME,
 } from './actions'
 
+let savedPlayerName = localStorage.getItem('playerName')
+
 const reducer = (
     state = {
 		gameRooms: [],
 		gameRoom: null,
 		gameState: null,
 		gameOverState: null,
-		playerName: 'unnamed'
+		playerName: savedPlayerName ? savedPlayerName : 'unnamed'
     },
     action
 	) => {

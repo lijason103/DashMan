@@ -17,13 +17,18 @@ class MainLobby extends Component {
         }
     }
 
+    componentDidMount() {
+        refreshRooms()
+        console.log("Main Lobby")
+    }
+
     changePlayerName = name => {
         this.props.dispatch({ type:SET_PLAYER_NAME, playerName: name })
     }
 
-    componentDidMount() {
-        refreshRooms()
-        console.log("Main Lobby")
+    onHide = () => {
+        this.setState({isChangingName: false})
+        localStorage.setItem('playerName', this.props.playerName)
     }
 
     render() {
@@ -63,7 +68,7 @@ class MainLobby extends Component {
             </Table>
             <Modal
                 show={this.state.isChangingName}
-                onHide={() => this.setState({isChangingName: false})}
+                onHide={this.onHide}
                 centered
             >
                 <Modal.Header closeButton>

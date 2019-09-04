@@ -54,7 +54,7 @@ class GameController {
         let endTime = new Date()
         let elapsedMS = (endTime - this.gl_startTime)/1000
         this.gl_startTime = endTime
-        if (!this.startTime || this.countDownTime > 0) {
+        if (!this.startTime) {
             this.countDownTime -= (elapsedMS*1000)
             return
         }
@@ -80,7 +80,7 @@ class GameController {
 
     startGameCountDown() {
         this.startTime = new Date().getTime()
-        // this.countDownTime = 0
+        this.countDownTime = 0
     }
 
     checkGameOver() {
