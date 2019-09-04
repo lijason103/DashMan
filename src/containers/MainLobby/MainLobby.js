@@ -15,11 +15,18 @@ class MainLobby extends Component {
         this.state = {
             isChangingName: false
         }
+        this.refreshTimer = null
+    }
+
+    componentWillUnmount() {
+        if (this.refreshTimer) clearInterval(this.refreshTimer)
     }
 
     componentDidMount() {
         refreshRooms()
-        console.log("Main Lobby")
+        this.refreshTimer = setInterval(() => {
+            refreshRooms()
+        }, 5000)
     }
 
     changePlayerName = name => {

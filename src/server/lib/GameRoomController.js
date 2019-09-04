@@ -43,7 +43,6 @@ class GameRoomController {
 
     handle_get_rooms() {
         this.socket.on('GET_ROOMS', () => {
-            console.log(this.socket.id, " <GET ROOMS> ")
             // Convert it into an array
             let rooms = []
             for (let property in GameRoomController.game_rooms) {
