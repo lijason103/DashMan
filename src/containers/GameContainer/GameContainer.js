@@ -20,11 +20,15 @@ class GameContainer extends Component {
         super(props)
 
         this.gameCanvas = null
+        this.modalTimer = null
     }
 
     componentWillUnmount() {
         if (this.game) {
             this.game.removeAllListeners()
+        }
+        if (this.modalTimer) {
+            clearTimeout(this.modalTimer)
         }
     }
 
@@ -93,7 +97,16 @@ class GameContainer extends Component {
                     label={mPlayer.hp > 0 ? `${mPlayer.energy}/${mPlayer.max_energy}` : 'DEAD'}
                 />}
             </div>
-            <Modal show={this.props.gameOverState ? true:false} onHide={this.onQuitGame} centered>
+            <Modal 
+                centered
+                show={this.props.gameOverState ? true:false} 
+                onHide={this.onQuitGame}
+                onShow={() => {
+                    this.modalTimer = setTimeout(() => {
+                        this.onQuitGame()
+                    }, 3000)
+                }}
+            >
                 <Modal.Header closeButton>
                     <Modal.Title>And the winner is...</Modal.Title>
                 </Modal.Header>
