@@ -1,6 +1,7 @@
 const Player = require('./GameObjects/Player')
 const Map = require('./GameObjects/Map')
 const config = require('../config.json')
+const Helper = require('./Helper')
 
 const BUFF_SPAWN_RATE = 8000 // ms w/ 2 players = BUFF_SPAWN_RATE - BUFF_SPAWN_RATE_PER_PLAYER*2
 const BUFF_SPAWN_RATE_PER_PLAYER = 500
@@ -18,22 +19,23 @@ class GameController {
         this.map = new Map()
 
         // Players
+        let positions = [
+            {x: 1, y: 1}, // left top corner
+            {x: this.map.getWidth()-2, y: 1}, // right top corner
+            {x: 1, y: this.map.getHeight()-2}, // bottom left corner
+            {x: this.map.getWidth()-2, y: this.map.getHeight()-2}, // bottom right corner
+            {x: Math.floor(this.map.getWidth()/2), y: 1}, // middle top
+            {x: Math.floor(this.map.getWidth()/2), y: this.map.getHeight()-2}, // middle bottom
+        ]
         this.players = {}
-        let p_i = 1
         for (let client of clients) {
             let id = client.id
             let name = client.name
-            let x, y
-            switch(p_i){
-                case 1: x = 1; y = 1; break // left top corner
-                case 2: x = this.map.getWidth()-2; y = 1; break // right top corner
-                case 3: x = 1; y = this.map.getHeight()-2; break // bottom left corner
-                case 4: x = this.map.getWidth()-2; y = this.map.getHeight()-2; break // bottom right corner
-                case 5: x = Math.round(this.map.getWidth()/2); y = 1; break // middle top
-                case 6: x = Math.round(this.map.getWidth()/2); y = this.map.getHeight()-2; break // middle bottom
-            }
+            let selectedIndex = Helper.generateRandom(0, positions.length-1)
+            let x = positions[selectedIndex].x
+            let y = positions[selectedIndex].y
+            positions.splice(selectedIndex, 1)
             this.players[id] = new Player(id, name, x, y)
-            p_i++
         }
 
         this.startTime = null
