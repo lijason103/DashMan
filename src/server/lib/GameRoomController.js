@@ -128,13 +128,12 @@ class GameRoomController {
 
             this.updateGameRoom(this.current_room_id, STATES.INGAME)
             room = GameRoomController.game_rooms[this.current_room_id]
-            this.io.in(this.current_room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
-
             // Create a game controller to handle the game for this particular room
             let clients = GameRoomController.game_rooms[this.current_room_id].clients
             for (let client of clients) {
                 client.isReady = false
             }
+            this.io.in(this.current_room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
             GameRoomController.game_rooms[this.current_room_id].gameController = new GameController(this.io, this.current_room_id, clients)
             GameRoomController.game_rooms[this.current_room_id].gameController.Initialize(this.onGameOver)
 
