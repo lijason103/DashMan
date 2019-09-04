@@ -21,7 +21,7 @@ class Buff {
         }
 
         // For strength or other buffs
-        this.multiplier = 1
+        this.addition = 0
     }
 
     activate(player) {
@@ -29,12 +29,12 @@ class Buff {
             // Duration type
             if (this.type === DURATION_TYPES[1]) {
                 // Increase strength (1 hit KO)
-                this.multiplier = 9999
-                player.dmg_multiplier *= this.multiplier
+                this.addition = 9999
+                player.dmgMultiplier += this.addition
             } else if (this.type === DURATION_TYPES[3]) {
                 // Increase charge rate
-                this.multiplier = 1.5
-                player.chargeRate *= this.multiplier
+                this.addition = 4
+                player.chargeRate += this.addition
             }
             this.expiryDate = new Date()
             this.expiryDate.setSeconds(this.expiryDate.getSeconds() + DURATION_TIME)
@@ -52,9 +52,9 @@ class Buff {
 
     deactivate(player) {
         if (this.type === DURATION_TYPES[1]) {
-            player.dmg_multiplier /= this.multiplier
+            player.dmgMultiplier -= this.addition
         } else if (this.type === DURATION_TYPES[3]) {
-            player.chargeRate /= this.multiplier
+            player.chargeRate -= this.addition
         }
     }
 
@@ -75,7 +75,7 @@ class Buff {
             id: this.id,
             expiryDate: this.expiryDate,
             type: this.type,
-            multiplier: this.multiplier,
+            addition: this.addition,
         }
     }
 

@@ -20,7 +20,7 @@ class Player{
         this.isCharging = false
 
         this.activeBuff = null
-        this.dmgMultiplier = 4
+        this.dmgMultiplier = 1
     }
 
     updateBuff(currentTime) {
@@ -98,8 +98,9 @@ class Player{
             if (Math.abs(this.x - otherPlayer.x) < 1 && Math.abs(this.y - otherPlayer.y) < 1) {
                 if (this.distanceTraveled > otherPlayer.distanceTraveled) {
                     // Only the one who traveled the furthest can deal dmg
-                    console.log(this.id, 'damaged', otherPlayer.id, 'by', (this.distanceTraveled * this.dmgMultiplier).toFixed(2))
-                    otherPlayer.hp -= (this.distanceTraveled * this.dmgMultiplier)
+                    let dmg = (otherPlayer.max_hp/3 + 0.1) * this.dmgMultiplier
+                    console.log(this.id, 'damaged', otherPlayer.id, 'by', dmg.toFixed(2))
+                    otherPlayer.hp -= dmg
                     // players[property].hp -= this.distanceTraveled
                     this.damagedPlayers[otherPlayer.id] = true
                 }

@@ -2,8 +2,10 @@ const Player = require('./GameObjects/Player')
 const Map = require('./GameObjects/Map')
 const config = require('../config.json')
 
-const BUFF_SPAWN_RATE = 8000 // ms
+const BUFF_SPAWN_RATE = 8000 // ms w/ 2 players = BUFF_SPAWN_RATE - BUFF_SPAWN_RATE_PER_PLAYER*2
+const BUFF_SPAWN_RATE_PER_PLAYER = 500
 const COUNT_DOWN_TIME = 3000
+const SPEED_UP_TIME = 30000 // every 30 seconds
 
 class GameController {
     constructor(io, room_id, clients) {
@@ -45,8 +47,9 @@ class GameController {
         this.sendUpdatesTimer = setInterval(this.sendUpdates.bind(this), 1000 / config.networkUpdateFactor)
         this.handle_socket_events()
         this.gameOverCallback = gameOverCallback
-        this.buffSpawnTimer = setInterval(this.spawnBuffLoop.bind(this), BUFF_SPAWN_RATE)
-        this.gameStartCountDownTimer = setTimeout(this.startGameCountDown.bind(this), COUNT_DOWN_TIME)
+        let buffSpawnRate = BUFF_SPAWN_RATE - (Object.keys(this.players).length * BUFF_SPAWN_RATE_PER_PLAYER)
+        this.buffSpawnTimer = setInterval(this.spawnBuffLoop.bind(this), buffSpawnRate)
+        this.gameStartCountDownTimer = setTimeout(this.startGameCountDownComplete.bind(this), COUNT_DOWN_TIME)
         this.countDownTime = COUNT_DOWN_TIME
     }
 
@@ -78,9 +81,18 @@ class GameController {
         this.checkGameOver()
     }
 
-    startGameCountDown() {
+    startGameCountDownComplete() {
         this.startTime = new Date().getTime()
         this.countDownTime = 0
+        this.speedUpTimer = setInterval(this.speedUpGamePace.bind(this), SPEED_UP_TIME)
+    }
+
+    speedUpGamePace() {
+        for (let property in this.players) {
+            let player = this.players[property]
+            player.chargeRate += 0.5
+            player.energyRate += 0.25
+        }
     }
 
     checkGameOver() {
@@ -194,6 +206,7 @@ class GameController {
         if (this.sendGameOverTimer) clearTimeout(this.sendGameOverTimer)
         if (this.buffSpawnTimer) clearInterval(this.buffSpawnTimer)
         if (this.gameStartCountDownTimer) clearTimeout(this.gameStartCountDownTimer)
+        if (this.speedUpTimer) clearInterval(this.speedUpTimer)
         
         // Remove MOVE_CHAR listener
         for (let property in this.players) {

@@ -2,7 +2,7 @@ import * as Pixi from 'pixi.js';
 
 const FONT_SIZE_REL = 0.4
 const COUNT_DOWN_FONT_SIZE_REL = 1.2
-const COUNT_DOWN_STROKE_REL = 0.1
+const COUNT_DOWN_STROKE_REL = 0.05
 
 export default class TimeIndicator {
     constructor(stage) {
@@ -11,7 +11,7 @@ export default class TimeIndicator {
         this.gameTime = 0
         this.graphics = new Pixi.Graphics()
         this.textGraphic = new Pixi.Text('0', {
-            fill: 0xffffff
+            fill: 0xffffff,
         })
         this.textGraphic.text = 0
         this.textGraphic.visible = false
@@ -21,7 +21,8 @@ export default class TimeIndicator {
         this.screenWidth = 0
 
         this.countDownTextGraphic = new Pixi.Text('0', {
-            fill: [0xFFEB3B, 0xFF9800, 0xFFEB3B],
+            fill: 0xFFEB3B,
+            fontFamily: "Helvetica",
         })
         this.countDownTextGraphic.text = 0
         this.countDownTextGraphic.visible = false

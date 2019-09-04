@@ -107,7 +107,7 @@ export default class Game {
         let blockSize = this.blockSize
 
         // Update arrow indicator only when
-        if (mPlayer.hp > 0 && this.timeIndicator.isGameStarted()) {
+        if (mPlayer.hp > 0 && this.timeIndicator.isGameStarted() && mPlayer.x === mPlayer.x_dest && mPlayer.y === mPlayer.y_dest) {
             if (this.controlManager.getIsCancelled()) {
                 this.arrowIndicator.reset()
             } else if (this.controlManager.getIsUp()) {
