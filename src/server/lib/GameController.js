@@ -3,6 +3,7 @@ const Map = require('./GameObjects/Map')
 const config = require('../config.json')
 
 const BUFF_SPAWN_RATE = 8000 // ms
+const COUNT_DOWN_TIME = 3000
 
 class GameController {
     constructor(io, room_id, clients) {
@@ -34,7 +35,8 @@ class GameController {
         }
 
         this.startTime = null
-        this.currentGameTime = null
+        this.currentGameTime = 0
+        this.countDownTime = 0
     }
 
     Initialize(gameOverCallback) {
@@ -44,14 +46,18 @@ class GameController {
         this.handle_socket_events()
         this.gameOverCallback = gameOverCallback
         this.buffSpawnTimer = setInterval(this.spawnBuffLoop.bind(this), BUFF_SPAWN_RATE)
-        this.startTime = new Date().getTime()
+        this.gameStartCountDownTimer = setTimeout(this.startGameCountDown.bind(this), COUNT_DOWN_TIME)
+        this.countDownTime = COUNT_DOWN_TIME
     }
-
 
     gameloop() {
         let endTime = new Date()
         let elapsedMS = (endTime - this.gl_startTime)/1000
         this.gl_startTime = endTime
+        if (!this.startTime || this.countDownTime > 0) {
+            this.countDownTime -= (elapsedMS*1000)
+            return
+        }
         this.currentGameTime = endTime.getTime() - this.startTime
 
         // Update player position
@@ -70,6 +76,11 @@ class GameController {
 
         // Check game over
         this.checkGameOver()
+    }
+
+    startGameCountDown() {
+        this.startTime = new Date().getTime()
+        // this.countDownTime = 0
     }
 
     checkGameOver() {
@@ -103,7 +114,8 @@ class GameController {
         let payload = {
             map: this.map.getAll(),
             players,
-            gameTime: this.currentGameTime
+            gameTime: this.currentGameTime,
+            startCountDownTime: this.countDownTime
         }
         this.io.in(this.room_id).emit('IN_GAME_STATE', payload)
     }
@@ -138,6 +150,7 @@ class GameController {
             let socket = this.io.sockets.sockets[player.id]
             if (socket) {
                 socket.on('MOVE_CHAR', payload => {
+                    if (!this.startTime) return
                     let direction = payload.direction
                     let steps = payload.steps
                     let player = this.players[socket.id]
@@ -147,10 +160,12 @@ class GameController {
                     }
                 })
                 socket.on('START_CHARGE', payload => {
+                    if (!this.startTime) return
                     let player = this.players[socket.id]
                     if (player) player.isCharging = true
                 })
                 socket.on('STOP_CHARGE', payload => {
+                    if (!this.startTime) return
                     let player = this.players[socket.id]
                     if (player) player.isCharging = false
                 })
@@ -177,7 +192,8 @@ class GameController {
         if (this.gameLoopTimer) clearInterval(this.gameLoopTimer)
         if (this.sendUpdatesTimer) clearInterval(this.sendUpdatesTimer)
         if (this.sendGameOverTimer) clearTimeout(this.sendGameOverTimer)
-        if (this.buffSpawnTimer) clearTimeout(this.buffSpawnTimer)
+        if (this.buffSpawnTimer) clearInterval(this.buffSpawnTimer)
+        if (this.gameStartCountDownTimer) clearTimeout(this.gameStartCountDownTimer)
         
         // Remove MOVE_CHAR listener
         for (let property in this.players) {

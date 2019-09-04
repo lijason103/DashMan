@@ -107,8 +107,7 @@ export default class Game {
         let blockSize = this.blockSize
 
         // Update arrow indicator only when
-        // player is still alive and is stationary
-        if (mPlayer.hp > 0 && mPlayer.x === mPlayer.x_dest && mPlayer.y === mPlayer.y_dest) {
+        if (mPlayer.hp > 0 && this.timeIndicator.isGameStarted()) {
             if (this.controlManager.getIsCancelled()) {
                 this.arrowIndicator.reset()
             } else if (this.controlManager.getIsUp()) {
@@ -186,7 +185,7 @@ export default class Game {
                         sPlayer.isCharging,
                         sPlayer.activeBuff,
                     )
-                } 
+                }
             }
 
             // Add new buffs to the map
@@ -205,6 +204,7 @@ export default class Game {
             }
             // Time
             this.timeIndicator.setGameTime(state.gameTime)
+            this.timeIndicator.setCountDownTime(state.startCountDownTime)
         })
     }
 
