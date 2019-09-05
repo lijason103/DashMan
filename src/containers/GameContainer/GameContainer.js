@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import './GameContainer.css'
-import { Button, ButtonGroup, ProgressBar, Modal } from 'react-bootstrap'
+import { Button, ButtonGroup, Modal } from 'react-bootstrap'
 import ReactResizeDetector from 'react-resize-detector'
 import Game from './Game'
-import { socket } from '../../index'
 import {
     leaveRoom,
 } from '../../socket'
 import {
     SET_GAME_ROOM,
-    SET_GAME_STATE,
     SET_GAME_OVER_STATE,
 } from '../../redux/actions'
 
@@ -39,7 +37,6 @@ class GameContainer extends Component {
 
     onQuitGame = () => {
         this.props.dispatch({ type:SET_GAME_OVER_STATE, gameOverState: null })
-        this.props.dispatch({ type:SET_GAME_STATE, gameState: null })
     }
 
     onFullScreenPress = () => {
@@ -63,10 +60,6 @@ class GameContainer extends Component {
     }
 
     render() {
-        let mPlayer = null
-        if (this.props.gameState && this.props.gameState.players) {
-            mPlayer = this.props.gameState.players[socket.id]
-        }
         return <div className="fullscreen">
             <ReactResizeDetector handleWidth handleHeight onResize={this.onResize} />
             <div id="game-wrapper" style={{display: 'flex', height: '100%', flexDirection: 'column'}}>
@@ -89,13 +82,6 @@ class GameContainer extends Component {
                         FS
                     </Button>}
                 </ButtonGroup>
-                {mPlayer && <ProgressBar style={{position: 'absolute', bottom: 0, width: '100%'}}
-                    striped={mPlayer.hp > 0}
-                    animated={mPlayer.hp > 0}
-                    variant={mPlayer.hp > 0 ? 'info' : 'danger'}
-                    now={mPlayer.hp > 0 ? mPlayer.energy/mPlayer.max_energy * 100 : 100}
-                    label={mPlayer.hp > 0 ? `${mPlayer.energy}/${mPlayer.max_energy}` : 'DEAD'}
-                />}
             </div>
             <Modal 
                 centered
@@ -125,7 +111,6 @@ class GameContainer extends Component {
 
 const mapStateToProps = state => ({
     gameRoom: state.gameRoom,
-    gameState: state.gameState,
     gameOverState: state.gameOverState,
 });
 

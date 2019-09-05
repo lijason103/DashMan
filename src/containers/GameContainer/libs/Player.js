@@ -6,7 +6,7 @@ const colors = [0x03A9F4, 0xf44336, 0x4CAF50, 0xFF9800, 0x9C27B0, 0x795548]
 const FONT_SIZE_REL = 0.3
 
 export default class Player {
-    constructor(stage, blockSize, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy, isCharging, activeBuff) {
+    constructor(stage, blockSize, num, id, name, x, y, hp, chargeRate, max_hp, x_dest, y_dest, distanceTraveled, energy, maxEnergy, isCharging, activeBuff) {
         this.stage = stage
         this.num = num
         this.x = x
@@ -20,6 +20,7 @@ export default class Player {
         this.y_dest = y_dest
         this.distanceTraveled = distanceTraveled
         this.energy = energy
+        this.maxEnergy = maxEnergy
         this.isCharging = isCharging
         this.activeBuff = activeBuff
 
@@ -222,6 +223,10 @@ export default class Player {
 
     getEnergy() {
         return this.energy
+    }
+
+    getMaxEnergy() {
+        return this.maxEnergy
     }
 
     getXDest() {

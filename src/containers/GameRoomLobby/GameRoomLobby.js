@@ -89,7 +89,7 @@ class GameRoomLobby extends Component {
     }
 
     render() {
-        if (this.props.gameOverState || (this.props.gameState && this.props.gameRoom.status === 'IN-GAME')) {
+        if (this.props.gameOverState || this.props.gameRoom.status === 'IN-GAME') {
             return <GameContainer />
         }
         return this.renderGameRoom()
@@ -99,7 +99,6 @@ class GameRoomLobby extends Component {
 const mapStateToProps = state => ({
     gameRoom: state.gameRoom,
     gameOverState: state.gameOverState,
-    gameState: state.gameState,
 });
 
 export default connect(mapStateToProps)(GameRoomLobby);

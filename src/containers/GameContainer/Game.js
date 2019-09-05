@@ -7,6 +7,7 @@ import ArrowIndicator from './libs/ArrowIndicator'
 import Map from './libs/Map'
 import Buff from './libs/Buff'
 import TimeIndicator from './libs/TimeIndicator'
+import EnergyBar from './libs/EnergyBar'
 
 export default class Game {
     constructor(gameWidth, gameHeight) {
@@ -33,6 +34,11 @@ export default class Game {
         // Players
         this.playersContainer = new Pixi.Container()
         this.app.stage.addChild(this.playersContainer)
+
+        // Energy Bar
+        this.energyBarContainer = new Pixi.Container()
+        this.app.stage.addChild(this.energyBarContainer)
+        this.energyBar = new EnergyBar(this.energyBarContainer)
 
         // Buffs
         this.buffs = {}
@@ -85,6 +91,9 @@ export default class Game {
             }
         }
 
+        // Render Energy
+        this.energyBar.render(blockSize)
+
         // Render Arrow
         if (mPlayer) {
             this.arrowIndicator.render(mPlayer.getX(), mPlayer.getY(), blockSize, mPlayer.getHp() <= 0)
@@ -105,6 +114,8 @@ export default class Game {
         this.render()
         let mPlayer = this.players[socket.id]
         let blockSize = this.blockSize
+
+        this.energyBar.updateEnergy(mPlayer.getEnergy(), mPlayer.getMaxEnergy())
 
         // Update arrow indicator only when
         if (mPlayer.getHp() > 0 && this.timeIndicator.isGameStarted() && mPlayer.getX() === mPlayer.getXDest() && mPlayer.getY() === mPlayer.getYDest()) {
@@ -145,7 +156,10 @@ export default class Game {
                 this.app.stage.x += this.getHorizontalPadding()
                 this.app.stage.y += this.getVerticalPadding()
                 this.map.renderBackground(this.blockSize)
-                this.timeIndicator.resize(this.blockSize, this.map.getStructureSize().width * this.blockSize)
+                let screenWidth = this.map.getStructureSize().width * this.blockSize
+                let screenHeight = this.map.getStructureSize().height * this.blockSize
+                this.timeIndicator.resize(this.blockSize, screenWidth)
+                this.energyBar.resize(this.blockSize, screenWidth, screenHeight)
             }
             let player_num = 0
             for (let property in state.players) {
@@ -168,6 +182,7 @@ export default class Game {
                             sPlayer.y_dest, 
                             sPlayer.distanceTraveled,
                             sPlayer.energy,
+                            sPlayer.max_energy,
                             sPlayer.isCharging
                         ))
                     player_num++
@@ -251,7 +266,10 @@ export default class Game {
         for (let property in this.buffs) {
             this.buffs[property].resize(this.blockSize)
         }
-        this.timeIndicator.resize(this.blockSize, this.map.getStructureSize().width * this.blockSize)
+        let screenWidth = this.map.getStructureSize().width * this.blockSize
+        let screenHeight = this.map.getStructureSize().height * this.blockSize
+        this.timeIndicator.resize(this.blockSize, screenWidth)
+        this.energyBar.resize(this.blockSize, screenWidth, screenHeight)
     }
 
     getApp() {

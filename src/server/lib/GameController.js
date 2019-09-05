@@ -104,7 +104,7 @@ class GameController {
             if (player.hp > 0) numOfAlive++
         }
         // Last man standing wins
-        if (numOfAlive === 1 && !this.sendGameOverTimer && process.env.NODE_ENV === 'production') {
+        if (numOfAlive === 1 && !this.sendGameOverTimer) {
             this.send_gameOver()
         }
     }
@@ -147,7 +147,7 @@ class GameController {
             }
             let payload = {
                 players,
-                winner,
+                winner: winner ? winner : 'Draw',
             }
             this.io.in(this.room_id).emit('GAME_OVER_STATE', payload)
             this.gameOverCallback(this.room_id)

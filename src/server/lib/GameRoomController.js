@@ -134,7 +134,7 @@ class GameRoomController {
             }
             this.io.in(this.current_room_id).emit('GAME_ROOM', this.generateRoomPayload(room))
             GameRoomController.game_rooms[this.current_room_id].gameController = new GameController(this.io, this.current_room_id, clients)
-            GameRoomController.game_rooms[this.current_room_id].gameController.Initialize(this.onGameOver)
+            GameRoomController.game_rooms[this.current_room_id].gameController.Initialize(this.onGameOver.bind(this))
 
         })
     }
@@ -240,6 +240,7 @@ class GameRoomController {
         }
         delete GameRoomController.game_rooms[room_id].gameController
         GameRoomController.game_rooms[room_id].status = STATES.LOBBY
+        this.io.in(room_id).emit('GAME_ROOM', this.generateRoomPayload(GameRoomController.game_rooms[room_id]))
     }
 }
 

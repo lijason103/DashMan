@@ -51,7 +51,6 @@ export default class Map {
     }
 
     isWall(x, y) {
-        console.log(x, y)
         if (x < 0 || y < 0 || x >= this.structures[0].length || y >= this.structures.length) return true
         if (this.structures[y][x] === 'W') return true
         return false
