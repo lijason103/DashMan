@@ -107,20 +107,20 @@ export default class Game {
         let blockSize = this.blockSize
 
         // Update arrow indicator only when
-        if (mPlayer.hp > 0 && this.timeIndicator.isGameStarted() && mPlayer.x === mPlayer.x_dest && mPlayer.y === mPlayer.y_dest) {
+        if (mPlayer.getHp() > 0 && this.timeIndicator.isGameStarted() && mPlayer.getX() === mPlayer.getXDest() && mPlayer.getY() === mPlayer.getYDest()) {
             if (this.controlManager.getIsCancelled()) {
                 this.arrowIndicator.reset()
             } else if (this.controlManager.getIsUp()) {
-                this.arrowIndicator.update(elapsedMS, 'up', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'up', mPlayer, blockSize, this.map)
             } else if (this.controlManager.getIsDown()) {
-                this.arrowIndicator.update(elapsedMS, 'down', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'down', mPlayer, blockSize, this.map)
             } else if (this.controlManager.getIsRight()) {
-                this.arrowIndicator.update(elapsedMS, 'right', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'right', mPlayer, blockSize, this.map)
             } else if (this.controlManager.getIsLeft()) {
-                this.arrowIndicator.update(elapsedMS, 'left', mPlayer.getChargeRate(), blockSize, mPlayer.energy)
+                this.arrowIndicator.update(elapsedMS, 'left', mPlayer, blockSize, this.map)
             } else {
                 // Send move request to server
-                let numOfBlocks = Math.floor(this.arrowIndicator.getNumOfBlock())
+                let numOfBlocks = this.arrowIndicator.getNumOfBlock()
                 if (numOfBlocks > 0) {
                     socket.emit('MOVE_CHAR', {
                         direction: this.arrowIndicator.direction,

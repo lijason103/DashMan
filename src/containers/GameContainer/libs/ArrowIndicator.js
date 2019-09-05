@@ -10,33 +10,47 @@ export default class ArrowIndicator {
     }
 
     render(x, y, blockSize, isClearOnly) {
+        this.graphics.clear()
+        if (isClearOnly) return
         let size = blockSize * 0.2
         let startX = x * blockSize + blockSize/2
         let startY = y * blockSize + blockSize/2
-        this.graphics.clear()
-        if (this.direction && !isClearOnly) {
+        if (this.direction) {
             this.graphics.beginFill(0x76FF03, 0.4);
             if (this.direction === 'up'){
-                this.graphics.drawRect(startX - size/2, startY - this.length + blockSize/2, size, this.length - blockSize/2)
+                this.graphics.drawRect(startX - size/2, startY - this.length - blockSize/2, size, this.length + blockSize/2)
             } else if (this.direction === 'down') {
-                this.graphics.drawRect(startX - size/2, startY, size, this.length - blockSize/2)
+                this.graphics.drawRect(startX - size/2, startY, size, this.length + blockSize/2)
             } else if (this.direction === 'left') {
-                this.graphics.drawRect(startX - this.length + blockSize/2, startY - size/2, this.length - blockSize/2, size)
+                this.graphics.drawRect(startX - this.length - blockSize/2, startY - size/2, this.length + blockSize/2, size)
             } else if (this.direction === 'right') {
-                this.graphics.drawRect(startX, startY - size/2, this.length - blockSize/2, size)
+                this.graphics.drawRect(startX, startY - size/2, this.length + blockSize/2, size)
             }
         }
     }
 
-    update(elapsedMS, direction, chargeRate, blockSize, currentEnergy) {
-        let addLength = elapsedMS * chargeRate * (blockSize/1000)
+    update(elapsedMS, direction, player, blockSize, map) {
+        let addLength = elapsedMS * player.getChargeRate() * (blockSize/1000)
         if (direction !== this.direction) {
             this.length = addLength
             this.direction = direction
         } else {
             // only allow to increase the length if there is enough energy
-            if ((this.length + addLength) / blockSize <= currentEnergy) {
-                this.length += addLength
+            let newLength = this.length + addLength
+            let requiredEnergy = newLength / blockSize
+            let isWall = true
+            let newLengthRelBlockSize = Math.floor((blockSize+newLength)/blockSize)
+            if (this.direction === 'up'){
+                isWall = map.isWall(player.getX(), player.getY() - newLengthRelBlockSize)
+            } else if (this.direction === 'down') {
+                isWall = map.isWall(player.getX(), player.getY() + newLengthRelBlockSize)
+            } else if (this.direction === 'left') {
+                isWall = map.isWall(player.getX() - newLengthRelBlockSize, player.getY())
+            } else if (this.direction === 'right') {
+                isWall = map.isWall(player.getX() + newLengthRelBlockSize, player.getY())
+            }
+            if (requiredEnergy <= player.getEnergy() && !isWall) {
+                this.length = newLength
                 this.numOfBlock = this.length / blockSize
             }
         }
@@ -50,7 +64,7 @@ export default class ArrowIndicator {
 
     // Get the number of blocks that the indicator has reached
     getNumOfBlock() {
-        return this.numOfBlock
+        return Math.round(this.numOfBlock)
     }
 
     getDirection() {

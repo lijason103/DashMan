@@ -220,6 +220,18 @@ export default class Player {
         return this.chargeRate
     }
 
+    getEnergy() {
+        return this.energy
+    }
+
+    getXDest() {
+        return this.x_dest
+    }
+
+    getYDest() {
+        return this.y_dest
+    }
+
     resize(blockSize) {
         this.name_graphics.style.fontSize = blockSize * FONT_SIZE_REL
     }
